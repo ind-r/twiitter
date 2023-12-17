@@ -57,6 +57,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ userCreated }, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "An error occurred" }, { status: 500 }); // Internal Server Error
+    return NextResponse.json({ error: error }, { status: 500 }); // Internal Server Error
   }
 }

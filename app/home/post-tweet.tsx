@@ -20,7 +20,7 @@ const postTweet = async (tweets: Array<TweetType>) => {
     alert(result.message);
 
   } catch (err) {
-
+    console.error(err);
   }
 }
 
@@ -33,7 +33,8 @@ export default function PostTweet({ data }: { data: Session }) {
     setTweet(value);
   }
 
-  const handleClick = async (e: SubmitEvent) => {
+  const handleClick = async (e: Event | undefined) => {
+    if (!e) return;
     e.preventDefault();
     if (data.user && data.user.name) {
       const tweetToPost: Array<TweetType> = [{

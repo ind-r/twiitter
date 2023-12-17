@@ -11,7 +11,8 @@ const router = useRouter()
     <div
       className={`cursor-pointer`}
       onClick={() => {
-      router.refresh()
+      router.refresh();
+      router.replace("/")
       }}>
       <FontAwesomeIcon color="white" className={`flex justify-center w-full`} icon={faRotateRight} />
     </div>

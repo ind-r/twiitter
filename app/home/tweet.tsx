@@ -1,55 +1,13 @@
 import { TweetType } from '../../libs/models/tweetModel'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart } from '@fortawesome/free-solid-svg-icons'
-import { faRetweet } from '@fortawesome/free-solid-svg-icons'
+import Like from './like'
+import Share from './share'
+import { getTweet, getUserImage, getNickname } from "../util"
 
-const getTweet = async (tweetId: string) => {
-
-  const res = await fetch(`http://localhost:3000/api/tweets/${tweetId}`, {
-    // body: JSON.stringify({ tweetId }),
-    cache: "no-store",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-  const result = await res.json();
-  return result.tweet;
-}
-
-const getUserImage = async (username: string) => {
-
-  const res = await fetch(`http://localhost:3000/api/users/${username}/image`, {
-    // body: JSON.stringify({ tweetId }),
-    cache: "no-store",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-  const result = await res.json();
-  return result.image;
-}
-
-const getNickname = async (username: string) => {
-
-  const res = await fetch(`http://localhost:3000/api/users/${username}/nickname`, {
-    // body: JSON.stringify({ tweetId }),
-    cache: "no-store",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-  const result = await res.json();
-  return result.nickname;
-}
-
-export default async function Tweet({ tweetId }: { tweetId: string }) {
+export default async function Tweet({ tweetId, liked, shared, sessionUsername }: { tweetId: string, liked: number, sessionUsername: string, shared: number }) {
   const tweet: TweetType = await getTweet(tweetId)
   const { username, tweetContent, likes, shares } = tweet;
-
   const nickname = await getNickname(username);
-  // const image = await getUserImage(username);
-  // const nickname = "yolo"
-  const image = ""
+  const image = await getUserImage(username);
 
   return (
     <div className="pt-2 text-white">
@@ -69,14 +27,8 @@ export default async function Tweet({ tweetId }: { tweetId: string }) {
         />
       </div>
       <div className="mr-3 pt-1 pb-1 ml-20 flex justify-evenly text-gray-700">
-        <div className="flex flex-col">
-          <FontAwesomeIcon className="float-left" icon={faHeart} />
-          <h1>{likes}</h1>
-        </div>
-        <div className="flex flex-col">
-          <FontAwesomeIcon className="float-left" icon={faRetweet} />
-          <h1>{shares}</h1>
-        </div>
+        <Like tweetId={tweetId} liked={liked} username={sessionUsername} likes={likes} />
+        <Share tweetId={tweetId} shared={shared} username={sessionUsername} shares={shares} />
       </div>
       <div className="h-[1px] w-full bg-gray-800 items-start mt-2"></div>
     </div>

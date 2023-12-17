@@ -27,13 +27,23 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { tweets } = body;
-  console.log(tweets);
+  const { tweets }: { tweets: Array<TweetType> } = body;
+  // console.log(tweets);
   // console.log(body);
   try {
     const connect = await MongooseConnect();
     if (connect) {
       let result = await Tweet.insertMany(body)
+      result.forEach(resultTweet => {
+        const id = resultTweet._id;
+        fetch(`http://localhost:3000/api/users/${resultTweet.username}/tweets/`, {
+          method: "POST",
+          body: JSON.stringify({id}),
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+      });
       if (result) {
         return NextResponse.json({ "message": "Tweet/s Added!" }, { status: 200 })
       }
