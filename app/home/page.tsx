@@ -1,11 +1,15 @@
 import { Suspense } from 'react'
 // import Tweets from './tweets'
 import dynamic from 'next/dynamic'
+import { getServerSession } from 'next-auth'
+import { SessionType, options } from '../api/auth/[...nextauth]/options'
+import PostTweet from './post-tweet'
 const Tweets = dynamic(() => import('./tweets'), {
-    ssr: false,
+  ssr: false,
 })
 
-export default function Home() {
+export default async function Home() {
+  const data: SessionType | null = await getServerSession(options)
   return (
     <div>
       <div className="absolute right-0 h-screen w-[30%] flex flex-row">
@@ -18,8 +22,11 @@ export default function Home() {
         <div className="absolute left-[25%] w-[45%]">
           <div className="h-[1px] w-full bg-gray-800 items-start"></div>
         </div>
+        {data &&
+          <PostTweet data={data} />
+        }
         <Suspense fallback={<p className="text-white text-4xl">Loading...</p>}>
-          <Tweets />
+          <Tweets data={data} />
         </Suspense>
       </div>
     </div>

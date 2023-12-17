@@ -1,16 +1,13 @@
 import Tweet from './tweet'
-import PostTweet from './post-tweet'
 import { TweetType } from '../../libs/models/tweetModel'
-import { Session, getServerSession } from 'next-auth'
-import { options } from '../api/auth/[...nextauth]/options'
+import { SessionType } from '../api/auth/[...nextauth]/options'
 import ReloadCircle from './reload-circle'
 import { getTweets, getUser } from "../util"
 import { UserType } from '@/libs/models/userModel'
 
-export default async function Tweets() {
+export default async function Tweets({ data }: { data: SessionType | null }) {
 
   let tweets: Array<TweetType> = await getTweets();
-  const data: Session | null = await getServerSession(options)
   let user: UserType | null = null
   let username = ''
   if (data && data.user && data.user.name) {
@@ -19,9 +16,6 @@ export default async function Tweets() {
   }
   return (
     <div>
-      {data &&
-        <PostTweet data={data} />
-      }
       <ReloadCircle />
       {(tweets) ? (
         tweets.reverse().map((tweet: TweetType) => {
