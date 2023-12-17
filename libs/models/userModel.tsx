@@ -5,6 +5,7 @@ export type UserType = {
   email: string,
   username: string,
   nickname: string,
+  googleId?: string,
   tweets: [string]
   shares: [string]
   likes: [string]
@@ -16,6 +17,7 @@ const userSchema = new mongoose.Schema({
   email: String,
   username: String,
   nickname: String,
+  googleId: String,
   tweets: [String],
   likes: [String],
   shares: [String],

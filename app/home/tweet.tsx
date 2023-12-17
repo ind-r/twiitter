@@ -7,11 +7,13 @@ export default async function Tweet({ tweetId, liked, shared, sessionUsername }:
   const tweet: TweetType = await getTweet(tweetId)
   const { username, tweetContent, likes, shares } = tweet;
   const nickname = await getNickname(username);
-  const image = await getUserImage(username);
+  const { image } = await getUserImage(username);
+  console.log(image)
 
   return (
     <div className="pt-2 text-white">
       <div className="bg-white h-[50px] w-[50px] float-left mt-2 ml-3 rounded-full overflow-hidden">
+        <img src={image} />
       </div>
       <div className="mr-3 pt-1 pb-1 ml-20">
         <h1 className="inline">{nickname}  </h1>

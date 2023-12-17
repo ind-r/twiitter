@@ -2,6 +2,7 @@ import SignOut from './signout'
 import Link from 'next/link'
 import { getServerSession } from 'next-auth';
 import { options } from '../api/auth/[...nextauth]/options'
+import { redirect } from 'next/navigation';
 
 export default async function DashboardProfile() {
   const data = await getServerSession(options)
@@ -13,13 +14,16 @@ export default async function DashboardProfile() {
     isLoggedIn = false;
   }
   if (isLoggedIn && data) {
+    if (data.user.name === "0") {
+      redirect("/auth/callback-register")
+    }
     return (
       <div className="mt-auto mb-10">
         <img
           className="float-left bg-white h-10 w-10 rounded-full"
           src={data.user.image}></img>
         <h1 className="text-white text-2xl p-3 ml-10">{data.user.name}</h1>
-      <SignOut />
+        <SignOut />
       </div>
     )
   } else {

@@ -108,8 +108,9 @@ export const options = {
         try {
           const db = await connectMongo(); // Make sure connectMongo returns a database connection
           const user: UserType | null = await UserMongo.findOne({
-            username: profile.email,
+            email: profile.email,
           }); // Use findOne instead of find
+          token.name = "0";
           if (user) {
             token.userId = user._id;
             token.name = user.username;
@@ -163,8 +164,8 @@ export const options = {
               // add your user in DB here with profile data (profile.email, profile.name)
               var newUser = new UserMongo({
                 email: profile.email,
-                nickname: profile.name,
-                username: "default",
+                nickname: "0",
+                username: "0",
                 googleId: account.providerAccountId,
                 image: profile.picture,
               });

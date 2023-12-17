@@ -24,7 +24,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faHouse} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Home</Link>
           </div>
         </div>
@@ -32,7 +32,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faMagnifyingGlass} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Explore</Link>
           </div>
         </div>
@@ -41,7 +41,7 @@ export default function Dashboard() {
 
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Notifications</Link>
           </div>
         </div>
@@ -49,7 +49,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faBell} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Messages</Link>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faList} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Lists</Link>
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faBookmark} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Bookmarks</Link>
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faUserGroup} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Communities</Link>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faX} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Premium</Link>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faUser} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >Profile</Link>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function Dashboard() {
           <FontAwesomeIcon color="white" className="float-left" icon={faEllipsis} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/"
+              href="/home"
             >More</Link>
           </div>
         </div>

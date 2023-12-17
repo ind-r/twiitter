@@ -47,17 +47,17 @@ export default function Form({ submit }: Props) {
     let valid = true;
     let newErrors = { ...errors };
 
-    if (user.username.trim() === '') {
-      newErrors.username = 'Username is required'
-      valid = false;
-    } else newErrors.username = '';
 
     let isUser = await getUser(user.username)
+
     if (isUser) {
       newErrors.username = 'Username already Exists'
       valid = false;
-    } else if (user.username.includes("@")) {
+    } else if (user.username.includes("@") || /\s/.test(user.username)) {
       newErrors.username = 'Username is invalid (cannot contain special characters)'
+      valid = false;
+    } else if (user.username.trim() === '') {
+      newErrors.username = 'Username is required'
       valid = false;
     } else newErrors.username = '';
 
@@ -71,6 +71,11 @@ export default function Form({ submit }: Props) {
     // Validate password
     if (user.password.length < 2) {
       newErrors.password = 'Password must be at least 2 characters';
+      valid = false;
+    } else newErrors.password = '';
+
+    if (/\s/.test(user.password)) {
+      newErrors.password = 'Password must not have spaces';
       valid = false;
     } else newErrors.password = '';
 

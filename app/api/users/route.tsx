@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   try {
     const connect = await mongoConnect()
     if (connect) {
-      const users : Array<UserType> = await User.find();
+      const users: Array<UserType> = await User.find();
       if (users.length !== 0) {
         return NextResponse.json({ users }, { status: 200 })
       }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const connect = await mongoConnect(); // Make sure this function returns a Promise that resolves when MongoDB is connected
 
     // Check if the username already exists
-    const existingUser : UserType | null = await User.findOne({ email });
+    const existingUser: UserType | null = await User.findOne({ email });
 
     if (existingUser) {
       console.log(existingUser);
@@ -46,17 +46,39 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       username,
       nickname: username,
       email,
-      image: " ",
+      image: "default-user.png",
       password: await hash(password, 12),
     });
     console.log(newUser);
 
     // Create new user
-    const userCreated : UserType | null = await newUser.save();
+    const userCreated: UserType | null = await newUser.save();
 
     return NextResponse.json({ userCreated }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: error }, { status: 500 }); // Internal Server Error
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const body = await request.json();
+  const { username, nickname, email } = body; 
+  try {
+    const connect = await mongoConnect()
+    if (connect) {
+      const user: UserType | null = await User.findOne({ email });
+      if (user) {
+        user.username = username;
+        user.nickname = nickname;
+        user.save();
+        return NextResponse.json({ user }, { status: 200 })
+      }
+      return NextResponse.json({ "message": "User not found" }, { status: 404 })
+    }
+    return NextResponse.json({ "message": "Db Not Connected" }, { status: 500 })
+  } catch (err) {
+
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }

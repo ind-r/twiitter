@@ -14,7 +14,7 @@ export const getUserImage = async (username: string) => {
     cache: "no-store",
   })
   const result = await res.json();
-  return result.image;
+  return result;
 }
 
 export const getNickname = async (username: string) => {

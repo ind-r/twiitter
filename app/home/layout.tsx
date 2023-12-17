@@ -6,13 +6,11 @@ export default function Layout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Dashboard />
-        <div className="ml-[25%]">
-          {children}
-        </div>
-      </body>
-    </html >
+    <div>
+      <Dashboard />
+      <div className="ml-[25%]">
+        {children}
+      </div>
+    </div>
   )
 }
