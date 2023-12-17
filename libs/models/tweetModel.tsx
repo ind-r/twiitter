@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 export type TweetType = {
-  _id?: string,
+  _id: string,
   username: string,
   tweetContent: string,
   likes: number,
@@ -12,7 +12,7 @@ const tweetSchema = new mongoose.Schema({
   username: String,
   tweetContent: String,
   likes: Number,
-  shares: Number
+  shares: Number,
 })
 
 const Tweet = mongoose.models.Tweet || mongoose.model('Tweet', tweetSchema);
