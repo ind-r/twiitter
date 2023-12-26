@@ -146,10 +146,16 @@ export const options = {
       account,
       profile,
     }: {
-      account: Account;
-      profile: GoogleProfile;
+      account: Account | null;
+      profile: GoogleProfile | undefined;
     }) {
+      if (!account) {
+        return false
+      }
       if (account.provider === "google") {
+        if (!profile) {
+          return false
+        }
         // console.log(account)
         try {
           // console.log("connecting to mongo database")
