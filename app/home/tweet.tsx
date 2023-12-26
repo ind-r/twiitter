@@ -8,7 +8,6 @@ export default async function Tweet({ tweetId, liked, shared, sessionUsername }:
   const { username, tweetContent, likes, shares } = tweet;
   const nickname = await getNickname(username);
   const { image } = await getUserImage(username);
-  console.log(image)
 
   return (
     <div className="pt-2 text-white">
