@@ -4,7 +4,7 @@ import { GoogleProfile } from "next-auth/providers/google";
 import connectMongo from "../../../../libs/MongooseConnect";
 import UserMongo, { UserType } from "../../../../libs/models/userModel";
 import { compare } from "bcryptjs";
-import { Account, TokenSet, User } from "next-auth";
+import { Account, Profile, TokenSet, User } from "next-auth";
 
 export type SessionType = {
   user: {
@@ -147,7 +147,7 @@ export const options = {
       profile,
     }: {
       account: Account | null;
-      profile: GoogleProfile | undefined;
+      profile: Profile | undefined;
     }) {
       if (!account) {
         return false
@@ -173,7 +173,7 @@ export const options = {
                 nickname: "0",
                 username: "0",
                 googleId: account.providerAccountId,
-                image: profile.picture,
+                // image: profile.picture,
               });
 
               newUser.save();
