@@ -5,15 +5,21 @@ import ReloadCircle from './reload-circle'
 import { getTweets, getUser } from "../util"
 import { UserType } from '@/libs/models/userModel'
 
-export default async function Tweets({ data }: { data: SessionType | null }) {
-
-  let tweets: Array<TweetType> = await getTweets();
+export default async function Tweets(
+  { data, mode }: { data: SessionType | null, mode: string }
+) {
   let user: UserType | null = null
   let username = ''
   if (data && data.user && data.user.name) {
     username = data.user.name
     user = await getUser(username);
   }
+  if (mode === "userFeed") {
+    var tweets: Array<TweetType> = await getTweets(username);
+  } else {
+    var tweets: Array<TweetType> = await getTweets("0");
+  }
+
   return (
     <div>
       <ReloadCircle />
@@ -31,10 +37,14 @@ export default async function Tweets({ data }: { data: SessionType | null }) {
               :
               (shared = 0);
           }
-          return <Tweet key={tweet._id} tweetId={tweet._id} sessionUsername={username} liked={liked} shared={shared} />
+          return <Tweet
+            key={tweet._id}
+            tweetId={tweet._id}
+            sessionUsername={username}
+            liked={liked}
+            shared={shared} />
         })
-      )
-        : (<div></div>)}
+      ) : (<div></div>)}
     </div >
   )
 }

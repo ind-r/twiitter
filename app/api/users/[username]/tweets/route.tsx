@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import User, { UserType } from '../../../../../libs/models/userModel'
 import mongoConnect from '../../../../../libs/MongooseConnect'
+import { TweetType } from "@/libs/models/tweetModel";
 
 export async function GET(request: NextRequest, { params }: { params: { username: string } }) {
   const { username } = params;
@@ -9,7 +10,15 @@ export async function GET(request: NextRequest, { params }: { params: { username
     if (connect) {
       const user: UserType | null = await User.findOne({ username });
       if (user) {
-        return NextResponse.json({ likes: user.tweets }, { status: 200 })
+        const tweetPromises = user.tweets.map(async (tweet) => {
+          const res = await fetch(`http://localhost:3000/api/tweets/${tweet}`, {
+            cache: "no-store",
+          });
+          const result = await res.json();
+          return result.tweet; // Return the tweet for inclusion in the Promise.all array
+        });
+        let tweets: Array<TweetType> = await Promise.all(tweetPromises);
+        return NextResponse.json({ tweets }, { status: 200 })
       }
       return NextResponse.json({ "message": "User not found" }, { status: 404 })
     }

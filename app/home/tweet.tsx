@@ -3,7 +3,20 @@ import Like from './like'
 import Share from './share'
 import { getTweet, getUserImage, getNickname } from "../util"
 
-export default async function Tweet({ tweetId, liked, shared, sessionUsername }: { tweetId: string, liked: number, sessionUsername: string, shared: number }) {
+export default async function Tweet(
+  { tweetId,
+    liked,
+    shared,
+    sessionUsername
+  }
+    :
+    {
+      tweetId: string,
+      liked: number,
+      sessionUsername: string,
+      shared: number
+    }
+) {
   const tweet: TweetType = await getTweet(tweetId)
   const { username, tweetContent, likes, shares } = tweet;
   const nickname = await getNickname(username);

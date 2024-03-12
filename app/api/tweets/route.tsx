@@ -5,12 +5,12 @@ import Tweet, { TweetType } from '../../../libs/models/tweetModel';
 export async function GET(request: NextRequest) {
   try {
     const connect = await MongooseConnect();
-    let tweet: TweetType = new Tweet({
-      username: "walruii",
-      tweetContent: "This is an epic tweet",
-      likes: 500,
-      shares: 500
-    })
+    // let tweet: TweetType = new Tweet({
+    //   username: "walruii",
+    //   tweetContent: "This is an epic tweet",
+    //   likes: 500,
+    //   shares: 500
+    // })
     if (connect) {
       // Tweet.insertMany(tweet)
       let tweets: Array<TweetType> = await Tweet.find()

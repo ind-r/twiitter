@@ -29,76 +29,11 @@ export default function Dashboard() {
           </div>
         </div>
         <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faMagnifyingGlass} />
+          <FontAwesomeIcon color="white" className="float-left" icon={faHouse} />
           <div className="text-white text-2xl pl-0 p-3 ml-10">
             <Link
-              href="/home"
-            >Explore</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faEnvelope} />
-
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >Notifications</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faBell} />
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >Messages</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faList} />
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >Lists</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faBookmark} />
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >Bookmarks</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faUserGroup} />
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >Communities</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faX} />
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >Premium</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faUser} />
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >Profile</Link>
-          </div>
-        </div>
-        <div>
-          <FontAwesomeIcon color="white" className="float-left" icon={faEllipsis} />
-          <div className="text-white text-2xl pl-0 p-3 ml-10">
-            <Link
-              href="/home"
-            >More</Link>
+              href="/home/feed"
+            >Feed</Link>
           </div>
         </div>
         <DashboardProfile />
@@ -107,3 +42,78 @@ export default function Dashboard() {
     </div>
   )
 }
+
+
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faMagnifyingGlass} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Explore</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faEnvelope} />
+
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Notifications</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faBell} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Messages</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faList} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Lists</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faBookmark} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Bookmarks</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faUserGroup} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Communities</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faX} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Premium</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faUser} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >Profile</Link>
+//   </div>
+// </div>
+// <div>
+//   <FontAwesomeIcon color="white" className="float-left" icon={faEllipsis} />
+//   <div className="text-white text-2xl pl-0 p-3 ml-10">
+//     <Link
+//       href="/home"
+//     >More</Link>
+//   </div>
+// </div>

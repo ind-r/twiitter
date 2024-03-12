@@ -38,15 +38,15 @@ export const options = {
           if (!credentials) {
             return null;
           }
-          const db = await connectMongo(); // Make sure connectMongo returns a database connection
+          const db = await connectMongo();
           if (credentials.email !== ' ') {
             var user: UserType | null = await UserMongo.findOne({
               email: credentials.email,
-            }); // Use findOne instead of find
+            });
           } else {
             var user: UserType | null = await UserMongo.findOne({
               username: credentials.username
-            }); // Use findOne instead of find
+            });
 
           }
 
@@ -145,10 +145,11 @@ export const options = {
     async signIn({
       account,
       profile,
-    }: {
-      account: Account | null;
-      profile: Profile | undefined;
-    }) {
+    }
+      : {
+        account: Account | null;
+        profile: Profile | undefined;
+      }) {
       if (!account) {
         return false
       }
@@ -173,7 +174,7 @@ export const options = {
                 nickname: "0",
                 username: "0",
                 googleId: account.providerAccountId,
-                // image: profile.picture,
+                image: profile.picture,
               });
 
               newUser.save();
