@@ -5,7 +5,7 @@ import { useState } from "react"
 
 const postTweet = async (tweets: Array<TweetType>) => {
   try {
-    const response = await fetch("http://localhost:3000/api/tweets", {
+    const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets`, {
       method: "POST",
       body: JSON.stringify(tweets),
       cache: "no-store",

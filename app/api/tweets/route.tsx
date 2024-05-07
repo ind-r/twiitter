@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       let result = await Tweet.insertMany(body)
       result.forEach(resultTweet => {
         const id = resultTweet._id;
-        fetch(`http://localhost:3000/api/users/${resultTweet.username}/tweets/`, {
+        fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${resultTweet.username}/tweets/`, {
           method: "POST",
           body: JSON.stringify({id}),
           headers: {

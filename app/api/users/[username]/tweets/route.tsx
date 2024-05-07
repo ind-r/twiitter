@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: { username
       const user: UserType | null = await User.findOne({ username });
       if (user) {
         const tweetPromises = user.tweets.map(async (tweet) => {
-          const res = await fetch(`http://localhost:3000/api/tweets/${tweet}`, {
+          const res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets/${tweet}`, {
             cache: "no-store",
           });
           const result = await res.json();

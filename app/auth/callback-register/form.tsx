@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 const submit = async (user: { username: string, nickname: string, email: string }) => {
   try {
-    const response = await fetch('http://localhost:3000/api/users', {
+    const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users`, {
       method: 'PATCH',
       body: JSON.stringify(user),
       headers: {
@@ -26,7 +26,7 @@ const submit = async (user: { username: string, nickname: string, email: string 
 
 async function getUser(user: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/users/${user}`, {
+    const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${user}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
