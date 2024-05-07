@@ -148,7 +148,7 @@ export const options = {
     }
       : {
         account: Account | null;
-        profile: Profile | undefined;
+        profile: GoogleProfile | undefined;
       }) {
       if (!account) {
         return false

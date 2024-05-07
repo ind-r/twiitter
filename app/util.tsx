@@ -48,3 +48,66 @@ export const getTweet = async (tweetId: string) => {
   const result = await res.json();
   return result.tweet;
 }
+
+export const deleteLike = async (tweetId: string, username: string) => {
+  const res2 = await fetch(`http://localhost:3000/api/users/${username}/likes/${tweetId}`, {
+    method: "DELETE",
+  })
+  const result2 = await res2.json();
+
+  const res1 = await fetch(`http://localhost:3000/api/tweets/${tweetId}/likes`, {
+    method: "DELETE",
+  })
+  const result1 = await res1.json();
+  // return result.tweet;
+  return result1 + result2;
+}
+
+export const sendLike = async (tweetId: string, username: string) => {
+  const res1 = await fetch(`http://localhost:3000/api/tweets/${tweetId}/likes`, {
+    method: "PUT",
+  })
+  const result1 = await res1.json();
+  // return result.tweet;
+  const res2 = await fetch(`http://localhost:3000/api/users/${username}/likes`, {
+    method: "POST",
+    body: JSON.stringify({ id: tweetId }),
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  const result2 = await res2.json();
+  return result1 + result2;
+}
+
+export const sendShare = async (tweetId: string, username: string) => {
+  const res1 = await fetch(`http://localhost:3000/api/tweets/${tweetId}/shares`, {
+    method: "PUT",
+  })
+  const result1 = await res1.json();
+  // return result.tweet;
+  const res2 = await fetch(`http://localhost:3000/api/users/${username}/shares`, {
+    method: "POST",
+    body: JSON.stringify({ id: tweetId }),
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  const result2 = await res2.json();
+  return result1 + result2;
+}
+
+export const deleteShare = async (tweetId: string, username: string) => {
+  const res1 = await fetch(`http://localhost:3000/api/tweets/${tweetId}/shares`, {
+    method: "DELETE",
+  })
+  const result1 = await res1.json();
+  // return result.tweet;
+  const res2 = await fetch(`http://localhost:3000/api/users/${username}/shares/${tweetId}`, {
+    method: "DELETE",
+  })
+  const result2 = await res2.json();
+  return result1 + result2;
+}
+
+

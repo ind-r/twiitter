@@ -30,7 +30,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     if (connect) {
       let tweet: TweetType | null = await Tweet.findById(id)
       if (tweet) {
-        if (tweet.likes !== 0) {
+        if (tweet.likes >= 0) {
           tweet.shares--;
           tweet.save()
         }
