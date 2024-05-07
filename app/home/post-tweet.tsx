@@ -37,7 +37,8 @@ export default function PostTweet({ data }: { data: Session }) {
     if (!e) return;
     e.preventDefault();
     if (data.user && data.user.name) {
-      const tweetToPost: Array<TweetType> = [{
+      // look into why this cant use TweetType
+      const tweetToPost: Array<any> = [{
         username: data.user.name,
         tweetContent: tweet,
         likes: 0,

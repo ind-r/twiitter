@@ -5,6 +5,7 @@ import connectMongo from "../../../../libs/MongooseConnect";
 import UserMongo, { UserType } from "../../../../libs/models/userModel";
 import { compare } from "bcryptjs";
 import { Account, Profile, TokenSet, User } from "next-auth";
+import { AdapterUser } from "next-auth/adapters";
 
 export type SessionType = {
   user: {
@@ -88,48 +89,46 @@ export const options = {
       profile,
     }: {
       token: TokenSet;
-      account: Account;
-      user: User;
-      profile: GoogleProfile;
+      account: Account | null;
+      user: User | AdapterUser;
+      profile?: Profile | undefined;
     }) {
-      // Persist the OAuth access_token and or the user id to the token right after signin
       if (account) {
-        // console.log(account)
-        // console.log(user)
+        // Set these once, as they do not depend on the database lookup
         token.accessToken = account.access_token;
         token.name = user.name;
         token.email = user.email;
         token.picture = user.image;
         token.userId = user.id;
-      }
-      if (profile) {
-        // console.log(account)
-        // console.log(profile)
-        try {
-          const db = await connectMongo(); // Make sure connectMongo returns a database connection
-          const user: UserType | null = await UserMongo.findOne({
-            email: profile.email,
-          }); // Use findOne instead of find
-          token.name = "0";
-          if (user) {
-            token.userId = user._id;
-            token.name = user.username;
-            token.picture = user.image;
-          } else {
-            console.log("User not found")
+
+        if (profile) {
+          try {
+            const db = await connectMongo(); // Ensure the connection is handled correctly in connectMongo
+            const dbUser: UserType | null = await UserMongo.findOne({
+              email: profile.email,
+            });
+
+            if (dbUser) {
+              // Update token with data from database
+              token.userId = dbUser._id;
+              token.name = dbUser.username;
+              token.picture = dbUser.image;
+            } else {
+              console.log("User not found");
+              // Optionally handle user not found scenario
+            }
+          } catch (error) {
+            console.log("Error accessing MongoDB:", error);
+            // Optionally handle the error, e.g., by setting an error flag in the token
           }
-        } catch (error) {
-          console.log(error);
+
+          // These should only be set if profile is available
+          token.email = profile.email;
         }
-        token.accessToken = account.access_token;
-        token.email = profile.email;
       }
-      // console.log(account)
-      // console.log(profile)
-      // console.log(user)
-      // console.log(token)
-      return token;
-    },
+      return token; // Return the modified token
+    }
+    ,
     async session({ session, token }: { session: any, token: TokenSet }) {
       // this token return above jwt()
       session.accessToken = token.accessToken;
@@ -145,52 +144,47 @@ export const options = {
     async signIn({
       account,
       profile,
-    }
-      : {
-        account: Account | null;
-        profile: GoogleProfile | undefined;
-      }) {
+    }: {
+      account: Account | null;
+      profile?: Profile | undefined; // Make profile optional if required by the library
+    }) {
       if (!account) {
-        return false
+        return false;
       }
       if (account.provider === "google") {
         if (!profile) {
-          return false
+          return false;
         }
-        // console.log(account)
         try {
-          // console.log("connecting to mongo database")
           const connect = await connectMongo();
-
           if (connect) {
-            // console.log("connected to mongo database")
             const user: UserType | null = await UserMongo.findOne({
               googleId: account.providerAccountId,
             });
             if (!user) {
-              // add your user in DB here with profile data (profile.email, profile.name)
               var newUser = new UserMongo({
                 email: profile.email,
                 nickname: "0",
                 username: "0",
                 googleId: account.providerAccountId,
-                image: profile.picture,
+                // image: profile.picture,
+                image: " ",
               });
 
-              newUser.save();
-            } else {
-              // console.log(user)
+              await newUser.save(); // Ensure `save` operation is awaited
             }
             return true;
           }
-          return true;
+          return false; // Ensure a boolean is returned if `connect` is falsy
         } catch (error) {
           console.log(error);
+          return false; // Ensure a boolean is returned in the catch block
         }
       } else if (account.provider === "credentials") {
         return true;
       }
-    },
+      return false; // Ensure a boolean is returned if no condition is met
+    }
   },
 
   pages: {

@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose'
 
-export type UserType = {
-  _id: string,
+export interface UserType extends Document {
   email: string,
   username: string,
   nickname: string,

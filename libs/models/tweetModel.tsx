@@ -1,7 +1,6 @@
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose'
 
-export type TweetType = {
-  _id: string,
+export interface TweetType extends Document {
   username: string,
   tweetContent: string,
   likes: number,
