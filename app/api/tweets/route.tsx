@@ -36,9 +36,13 @@ export async function POST(request: NextRequest) {
       let result = await Tweet.insertMany(body)
       result.forEach(resultTweet => {
         const id = resultTweet._id;
-        fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${resultTweet.username}/tweets/`, {
+        const apiUrl = process.env.API_URL;
+        if (!apiUrl) {
+          throw new Error("API_URL is not defined in the environment variables");
+        }
+        fetch(`${apiUrl}/api/users/${resultTweet.username}/tweets/`, {
           method: "POST",
-          body: JSON.stringify({id}),
+          body: JSON.stringify({ id }),
           headers: {
             'Content-Type': 'application/json',
           }

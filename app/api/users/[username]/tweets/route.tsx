@@ -11,7 +11,11 @@ export async function GET(request: NextRequest, { params }: { params: { username
       const user: UserType | null = await User.findOne({ username });
       if (user) {
         const tweetPromises = user.tweets.map(async (tweet) => {
-          const res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets/${tweet}`, {
+          const apiUrl = process.env.API_URL;
+          if (!apiUrl) {
+            throw new Error("API_URL is not defined in the environment variables");
+          }
+          const res = await fetch(`${apiUrl}/api/tweets/${tweet}`, {
             cache: "no-store",
           });
           const result = await res.json();

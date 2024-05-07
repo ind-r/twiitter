@@ -1,7 +1,12 @@
+const apiUrl = process.env.API_URL;
+
+if (!apiUrl) {
+  throw new Error("API_URL is not defined in the environment variables");
+}
 
 export const getUser = async (username: string) => {
 
-  const res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}`, {
+  const res = await fetch(`${apiUrl}/api/users/${username}`, {
     cache: "no-store",
   })
   const result = await res.json();
@@ -10,7 +15,7 @@ export const getUser = async (username: string) => {
 
 export const getUserImage = async (username: string) => {
 
-  const res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}/image`, {
+  const res = await fetch(`${apiUrl}/api/users/${username}/image`, {
     cache: "no-store",
   })
   const result = await res.json();
@@ -19,7 +24,7 @@ export const getUserImage = async (username: string) => {
 
 export const getNickname = async (username: string) => {
 
-  const res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}/nickname`, {
+  const res = await fetch(`${apiUrl}/api/users/${username}/nickname`, {
     cache: "no-store",
   })
   const result = await res.json();
@@ -28,11 +33,11 @@ export const getNickname = async (username: string) => {
 
 export const getTweets = async (username: string) => {
   if (username === "0") {
-    var res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets`, {
+    var res = await fetch(`${apiUrl}/api/tweets`, {
       cache: "no-store"
     })
   } else {
-    var res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}/tweets`, {
+    var res = await fetch(`${apiUrl}/api/users/${username}/tweets`, {
       cache: "no-store"
     })
   }
@@ -42,7 +47,7 @@ export const getTweets = async (username: string) => {
 
 export const getTweet = async (tweetId: string) => {
 
-  const res = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets/${tweetId}`, {
+  const res = await fetch(`${apiUrl}/api/tweets/${tweetId}`, {
     cache: "no-store",
   })
   const result = await res.json();
@@ -50,12 +55,12 @@ export const getTweet = async (tweetId: string) => {
 }
 
 export const deleteLike = async (tweetId: string, username: string) => {
-  const res2 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}/likes/${tweetId}`, {
+  const res2 = await fetch(`${apiUrl}/api/users/${username}/likes/${tweetId}`, {
     method: "DELETE",
   })
   const result2 = await res2.json();
 
-  const res1 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets/${tweetId}/likes`, {
+  const res1 = await fetch(`${apiUrl}/api/tweets/${tweetId}/likes`, {
     method: "DELETE",
   })
   const result1 = await res1.json();
@@ -64,12 +69,12 @@ export const deleteLike = async (tweetId: string, username: string) => {
 }
 
 export const sendLike = async (tweetId: string, username: string) => {
-  const res1 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets/${tweetId}/likes`, {
+  const res1 = await fetch(`${apiUrl}/api/tweets/${tweetId}/likes`, {
     method: "PUT",
   })
   const result1 = await res1.json();
   // return result.tweet;
-  const res2 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}/likes`, {
+  const res2 = await fetch(`${apiUrl}/api/users/${username}/likes`, {
     method: "POST",
     body: JSON.stringify({ id: tweetId }),
     headers: {
@@ -81,12 +86,12 @@ export const sendLike = async (tweetId: string, username: string) => {
 }
 
 export const sendShare = async (tweetId: string, username: string) => {
-  const res1 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets/${tweetId}/shares`, {
+  const res1 = await fetch(`${apiUrl}/api/tweets/${tweetId}/shares`, {
     method: "PUT",
   })
   const result1 = await res1.json();
   // return result.tweet;
-  const res2 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}/shares`, {
+  const res2 = await fetch(`${apiUrl}/api/users/${username}/shares`, {
     method: "POST",
     body: JSON.stringify({ id: tweetId }),
     headers: {
@@ -98,12 +103,12 @@ export const sendShare = async (tweetId: string, username: string) => {
 }
 
 export const deleteShare = async (tweetId: string, username: string) => {
-  const res1 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets/${tweetId}/shares`, {
+  const res1 = await fetch(`${apiUrl}/api/tweets/${tweetId}/shares`, {
     method: "DELETE",
   })
   const result1 = await res1.json();
   // return result.tweet;
-  const res2 = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${username}/shares/${tweetId}`, {
+  const res2 = await fetch(`${apiUrl}/api/users/${username}/shares/${tweetId}`, {
     method: "DELETE",
   })
   const result2 = await res2.json();

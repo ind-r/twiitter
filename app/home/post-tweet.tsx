@@ -5,7 +5,11 @@ import { useState } from "react"
 
 const postTweet = async (tweets: Array<TweetType>) => {
   try {
-    const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/tweets`, {
+    const apiUrl = process.env.API_URL;
+    if (!apiUrl) {
+      throw new Error("API_URL is not defined in the environment variables");
+    }
+    const response = await fetch(`${apiUrl}/api/tweets`, {
       method: "POST",
       body: JSON.stringify(tweets),
       cache: "no-store",

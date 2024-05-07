@@ -6,7 +6,11 @@ import { useState, useEffect } from 'react';
 
 const submit = async (user: { username: string, nickname: string, email: string }) => {
   try {
-    const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users`, {
+    const apiUrl = process.env.API_URL;
+    if (!apiUrl) {
+      throw new Error("API_URL is not defined in the environment variables");
+    }
+    const response = await fetch(`${apiUrl}/api/users`, {
       method: 'PATCH',
       body: JSON.stringify(user),
       headers: {
