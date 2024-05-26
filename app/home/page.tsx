@@ -10,14 +10,22 @@ const Tweets = dynamic(() => import('./tweets'), {
 
 export default async function Home() {
   const data: SessionType | null = await getServerSession(options)
+  const uri = process.env.NEXTAUTH_URL as string;
   return (
     <div>
-      {data &&
-        <PostTweet data={data} />
-      }
-      <Suspense fallback={<p className="text-white text-4xl">Loading...</p>}>
-        <Tweets data={data} mode="home" />
-      </Suspense>
+      <p>
+        {uri}
+      </p>
+      <p>
+        {`${uri}/api/secrets`}
+      </p>
     </div>
   )
 }
+
+// {data &&
+//   <PostTweet data={data} />
+// }
+// <Suspense fallback={<p className="text-white text-4xl">Loading...</p>}>
+//   <Tweets data={data} mode="home" />
+// </Suspense>
