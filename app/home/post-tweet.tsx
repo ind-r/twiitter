@@ -5,9 +5,9 @@ import { useState } from "react"
 
 const postTweet = async (tweets: Array<TweetType>) => {
   try {
-    const apiUrl = process.env.API_URL;
+    const apiUrl = process.env.NEXTAUTH_URL;
     if (!apiUrl) {
-      throw new Error("API_URL is not defined in the environment variables");
+      throw new Error("NEXTAUTH_URL is not defined in the environment variables");
     }
     const response = await fetch(`${apiUrl}/api/tweets`, {
       method: "POST",

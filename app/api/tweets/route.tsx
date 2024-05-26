@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
       let result = await Tweet.insertMany(body)
       result.forEach(resultTweet => {
         const id = resultTweet._id;
-        const apiUrl = process.env.API_URL;
+        const apiUrl = process.env.NEXTAUTH_URL;
         if (!apiUrl) {
-          throw new Error("API_URL is not defined in the environment variables");
+          throw new Error("NEXTAUTH_URL is not defined in the environment variables");
         }
         fetch(`${apiUrl}/api/users/${resultTweet.username}/tweets/`, {
           method: "POST",

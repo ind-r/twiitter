@@ -11,9 +11,9 @@ export async function GET(request: NextRequest, { params }: { params: { username
       const user: UserType | null = await User.findOne({ username });
       if (user) {
         const tweetPromises = user.tweets.map(async (tweet) => {
-          const apiUrl = process.env.API_URL;
+          const apiUrl = process.env.NEXTAUTH_URL;
           if (!apiUrl) {
-            throw new Error("API_URL is not defined in the environment variables");
+            throw new Error("NEXTAUTH_URL is not defined in the environment variables");
           }
           const res = await fetch(`${apiUrl}/api/tweets/${tweet}`, {
             cache: "no-store",

@@ -1,7 +1,7 @@
-const apiUrl = process.env.API_URL;
+const apiUrl = process.env.NEXTAUTH_URL;
 
 if (!apiUrl) {
-  throw new Error("API_URL is not defined in the environment variables");
+  throw new Error("NEXTAUTH_URL is not defined in the environment variables");
 }
 
 export const getUser = async (username: string) => {

@@ -7,7 +7,7 @@ export default async function Register() {
 
   async function submit(user: { username: string, password: string, email: string }) {
     try {
-      const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users`, {
+      const response = await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/users`, {
         method: 'POST',
         body: JSON.stringify(user),
         headers: {

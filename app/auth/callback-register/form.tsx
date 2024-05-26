@@ -6,9 +6,9 @@ import { useState, useEffect } from 'react';
 
 const submit = async (user: { username: string, nickname: string, email: string }) => {
   try {
-    const apiUrl = process.env.API_URL;
+    const apiUrl = process.env.NEXTAUTH_URL;
     if (!apiUrl) {
-      throw new Error("API_URL is not defined in the environment variables");
+      throw new Error("NEXTAUTH_URL is not defined in the environment variables");
     }
     const response = await fetch(`${apiUrl}/api/users`, {
       method: 'PATCH',
@@ -30,7 +30,7 @@ const submit = async (user: { username: string, nickname: string, email: string 
 
 async function getUser(user: string) {
   try {
-    const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/users/${user}`, {
+    const response = await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/users/${user}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
