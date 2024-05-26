@@ -1,4 +1,5 @@
 const apiUrl = process.env.NEXTAUTH_URL;
+console.log(apiUrl);
 
 if (!apiUrl) {
   throw new Error("NEXTAUTH_URL is not defined in the environment variables");
