@@ -138,7 +138,8 @@ export const options = {
       return session;
     },
     async redirect() {
-      return "http://localhost:3000/";
+    const apiUrl = process.env.NEXTAUTH_URL as string;
+      return apiUrl;
     },
 
     async signIn({
