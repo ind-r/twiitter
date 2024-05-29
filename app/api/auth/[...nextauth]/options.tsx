@@ -6,7 +6,7 @@ import { compare } from "bcryptjs";
 import { Account, Profile, Session, TokenSet, User } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 
-export interface SessionType extends Session  {
+export interface SessionType extends Session {
   user: {
     name: string,
     email: string,
@@ -87,13 +87,22 @@ export const options = {
       account,
       user,
       profile,
+      trigger,
+      session,
     }: {
       token: TokenSet;
       account: Account | null;
       user: User | AdapterUser;
       profile?: Profile | undefined;
+      trigger?: "update" | "signIn" | "signUp" | undefined;
+      session?: any;
     }) {
       if (account) {
+        if (trigger === "update") {
+          token.name = session.user.name;
+          console.log("hello")
+          return token;
+        }
         // Set these once, as they do not depend on the database lookup
         token.accessToken = account.access_token;
         token.name = user.name;

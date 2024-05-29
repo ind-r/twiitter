@@ -10,9 +10,7 @@ export default function Form() {
     if (session && session.user) {
       // await completeRegistration(user, session.user.userId)
       await update({
-        user: {
-          name: user.username
-        }
+      name: "user"
       });
       console.log(session);
     }
