@@ -4,20 +4,21 @@ import { GoogleProfile } from "next-auth/providers/google";
 import connectMongo from "../../../../libs/MongooseConnect";
 import UserMongo, { UserType } from "../../../../libs/models/userModel";
 import { compare } from "bcryptjs";
-import { Account, Profile, TokenSet, User } from "next-auth";
+import { Account, Profile, Session, TokenSet, User } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 
-export type SessionType = {
+export interface SessionType extends Session  {
   user: {
     name: string,
     email: string,
     image: string,
     userId: string,
   }
-  expires: string,
-  accessToken: string,
 }
 
+interface CustomProfile extends Profile {
+  picture?: string,
+}
 
 export const options = {
   providers: [
@@ -137,8 +138,9 @@ export const options = {
       // console.log(session);
       return session;
     },
+
     async redirect() {
-    const apiUrl = process.env.NEXTAUTH_URL as string;
+      const apiUrl = process.env.NEXTAUTH_URL as string;
       return apiUrl;
     },
 
@@ -147,7 +149,7 @@ export const options = {
       profile,
     }: {
       account: Account | null;
-      profile?: Profile | undefined; // Make profile optional if required by the library
+      profile?: CustomProfile | undefined; // Make profile optional if required by the library
     }) {
       if (!account) {
         return false;
@@ -160,7 +162,8 @@ export const options = {
           const connect = await connectMongo();
           if (connect) {
             const user: UserType | null = await UserMongo.findOne({
-              googleId: account.providerAccountId,
+              // googleId: account.providerAccountId,
+              email: profile.email,
             });
             if (!user) {
               var newUser = new UserMongo({
@@ -168,11 +171,13 @@ export const options = {
                 nickname: "0",
                 username: "0",
                 googleId: account.providerAccountId,
-                // image: profile.picture,
-                image: " ",
+                image: profile.picture,
               });
 
               await newUser.save(); // Ensure `save` operation is awaited
+            } else if (!user.googleId) {
+              user.googleId = account.providerAccountId;
+              user.save();
             }
             return true;
           }

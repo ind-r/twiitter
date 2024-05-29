@@ -1,5 +1,6 @@
 'use client'
 import { SessionType } from '@/app/api/auth/[...nextauth]/options';
+import SignOut from '@/app/home/signout';
 import { signIn, signOut } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { useState, useEffect } from 'react';
