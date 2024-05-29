@@ -97,12 +97,11 @@ export const options = {
       trigger?: "update" | "signIn" | "signUp" | undefined;
       session?: any;
     }) {
+      if (trigger === "update") {
+        token.name = session.name;
+        return token;
+      }
       if (account) {
-        if (trigger === "update") {
-          token.name = session.user.name;
-          console.log("hello")
-          return token;
-        }
         // Set these once, as they do not depend on the database lookup
         token.accessToken = account.access_token;
         token.name = user.name;
@@ -138,7 +137,15 @@ export const options = {
       return token; // Return the modified token
     }
     ,
-    async session({ session, token }: { session: any, token: TokenSet }) {
+    async session(
+      { session,
+        token,
+      }
+        :
+        {
+          session: any,
+          token: TokenSet
+        }) {
       // this token return above jwt()
       session.accessToken = token.accessToken;
       session.user.userId = token.userId;

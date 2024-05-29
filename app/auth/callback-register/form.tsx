@@ -1,20 +1,20 @@
 'use client'
 import { completeRegistration, isUsernameTakenAlready } from '@/actions/actions';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Form() {
+  const router = useRouter();
 
   const { data: session, update } = useSession();
   const submit = async (newUser: { username: string, nickname: string }) => {
     if (session && session.user) {
-      // await completeRegistration(user, session.user.userId)
+      await completeRegistration(user, session.user.userId)
       await update({
-        user: {
-          name: user.username
-        }
+        name: newUser.username,
       });
-      console.log(session);
+      router.refresh();
     }
   }
 
