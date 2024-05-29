@@ -1,6 +1,5 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { GoogleProfile } from "next-auth/providers/google";
 import connectMongo from "../../../../libs/MongooseConnect";
 import UserMongo, { UserType } from "../../../../libs/models/userModel";
 import { compare } from "bcryptjs";

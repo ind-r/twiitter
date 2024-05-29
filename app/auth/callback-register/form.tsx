@@ -1,64 +1,25 @@
 'use client'
-import { SessionType } from '@/app/api/auth/[...nextauth]/options';
-import SignOut from '@/app/home/signout';
-import { signIn, signOut } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { completeRegistration, isUsernameTakenAlready } from '@/actions/actions';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
 
-const submit = async (user: { username: string, nickname: string, email: string }) => {
-  try {
-    const apiUrl = process.env.NEXTAUTH_URL;
-    if (!apiUrl) {
-      throw new Error("NEXTAUTH_URL is not defined in the environment variables");
+export default function Form() {
+
+  const { data: session, update } = useSession();
+  const submit = async (newUser: { username: string, nickname: string }) => {
+    if (session && session.user) {
+
+      await completeRegistration(user, session.user.userId)
+      await update({ name: user.username });
     }
-    const response = await fetch(`${apiUrl}/api/users`, {
-      method: 'PATCH',
-      body: JSON.stringify(user),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    // if (!response.ok) {
-    //   throw new Error('Failed to submit user data');
-    // }
-    const result = await response.json();
-    console.log(result)
-
-  } catch (error) {
-    console.error('An error occurred:', error);
+    console.log(session);
   }
-}
 
-async function getUser(user: string) {
-  try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/users/${user}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    // if (!response.ok) {
-    //   throw new Error('Failed to getUser');
-    // }
-    const result = await response.json();
-    if (response.status === 404) {
-      return false;
-      // throw new Error('User Not found', result)
-    } else if (response.status === 200) {
-      return true;
-    }
-    return false
-  } catch (error) {
-    console.error('An error occurred:', error);
-  }
-};
-
-export default function Form({ data }: { data: SessionType }) {
   const [user, setUser] = useState({
     username: '',
     nickname: '',
-    email: data.user.email
   })
+
   const [errors, setErrors] = useState({
     username: '',
     nickname: '',
@@ -69,8 +30,8 @@ export default function Form({ data }: { data: SessionType }) {
     let newErrors = { ...errors };
 
 
-    let isUser = await getUser(user.username)
-    if (isUser) {
+    let isUsernameTaken = await isUsernameTakenAlready(user.username)
+    if (isUsernameTaken) {
       newErrors.username = 'Username already Exists'
       valid = false;
     } else if (user.username.includes("@") || (/\s/.test(user.username))) {
@@ -121,8 +82,7 @@ export default function Form({ data }: { data: SessionType }) {
         <div>{errors.nickname}</div>
         <button onClick={async () => {
           if (await validateUser()) {
-            submit(user);
-            signOut();
+            await submit(user);
           }
         }} type="button"
           className={`text-white rounded-lg p-2 mt-5 bg-red-800`}>

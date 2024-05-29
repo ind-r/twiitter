@@ -11,8 +11,8 @@ export interface UserType extends Document {
   nickname: string,
   googleId?: string,
   tweets: [string]
-  shares: [string]
-  likes: [string]
+  shares: string[]
+  likes: string[]
   password: string,
   image: string,
 }
