@@ -15,7 +15,7 @@ export default async function Tweet(
       tweetContent: string,
       userId: string
       tweetId: string
-      data: SessionType
+      data: SessionType | null
     }
 ) {
   const tweetUser: UserInfo | undefined | null = await getUserInfo(userId);

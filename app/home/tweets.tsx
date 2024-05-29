@@ -4,7 +4,7 @@ import ReloadCircle from './reload-circle'
 import { getTweets } from "@/actions/actions"
 import { SessionType } from '../api/auth/[...nextauth]/options';
 
-export default async function Tweets({ data }: { data: SessionType }) {
+export default async function Tweets({ data }: { data: SessionType | null }) {
 
   const tweets: Array<TweetType> | undefined = await getTweets();
 
