@@ -17,10 +17,8 @@ export default async function Tweets({ data }: { data: SessionType }) {
             return <Tweet
               key={tweet._id}
               tweetContent={tweet.tweetContent}
-              tweetId={tweet._id}
+              tweetId={tweet._id.toString()}
               userId={tweet.userId}
-              likes={tweet.likes}
-              shares={tweet.shares}
               data={data}
             />
           }
