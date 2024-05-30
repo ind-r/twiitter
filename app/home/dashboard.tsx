@@ -6,22 +6,19 @@ import { faX } from '@fortawesome/free-solid-svg-icons'
 
 export default function Dashboard() {
   return (
-    <div className="absolute w-[25%] h-screen flex flex-row">
-      <div className="h-screen basis-2/6"></div>
-      <div className="h-screen basis-full flex flex-col">
-        <div className="text-white text-3xl pb-20 pt-10">
-          TWITTER
-          <FontAwesomeIcon color="white" className="float-left pr-3" icon={faX} />
-        </div>
+    <nav className="h-full flex flex-row">
+      <div className="h-full basis-full flex flex-col pb-20">
+        <Link href="/home" className="text-white text-2xl pl-0 p-3 ml-10 pt-10 pb-20">
+          <p className=" font-extrabold lg:inline">TWITTER</p>
+        </Link>
 
         <Link href="/home" className="text-white text-2xl pl-0 p-3 ml-10">
           <FontAwesomeIcon color="white" className="float-left pr-3" icon={faHouse} />
-          <p>Home</p>
+          <p className="hidden lg:block">Home</p>
         </Link>
 
         <DashboardProfile />
       </div>
-      <div className="h-screen w-[1px] bg-gray-800 items-end"></div>
-    </div >
+    </nav >
   )
 }

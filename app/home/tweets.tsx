@@ -9,7 +9,7 @@ export default async function Tweets({ data }: { data: SessionType | null }) {
   const tweets: Array<TweetType> | undefined = await getTweets();
 
   return (
-    <div>
+    <>
       <ReloadCircle />
       {(tweets) ? (
         tweets.reverse().map(
@@ -24,6 +24,6 @@ export default async function Tweets({ data }: { data: SessionType | null }) {
           }
         )
       ) : (<div>No Tweets</div>)}
-    </div >
+    </ >
   )
 }

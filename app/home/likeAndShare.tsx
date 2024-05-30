@@ -14,7 +14,7 @@ export default async function LikeAndShare({ tweetId, sessionUserId }: { tweetId
     const likedBy: boolean = await getLikedBy(tweetId, sessionUserId);
     const sharedBy: boolean = await getSharedBy(tweetId, sessionUserId);
     return (
-      <div className="mr-3 pt-1 pb-1 ml-20 flex justify-evenly text-gray-700">
+      <div className="mr-6 mt-4 pb-1 ml-20 flex justify-evenly text-gray-700">
         <div className="flex flex-col items-center">
           <Like
             tweetId={tweetId}
@@ -36,7 +36,7 @@ export default async function LikeAndShare({ tweetId, sessionUserId }: { tweetId
     )
   } else {
     return (
-      <div className="mr-3 pt-1 pb-1 ml-20 flex justify-evenly text-gray-700">
+      <div className="mr-6 mt-4 pb-1 ml-20 flex justify-evenly text-gray-700">
         <Link
           href="auth/signin"
           className="flex flex-col items-center cursor-pointer"
