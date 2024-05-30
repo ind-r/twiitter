@@ -28,7 +28,7 @@ export default async function Tweet(
     let { username, nickname, image } = tweetUser;
     return (
       <div className="pt-2 text-white">
-        <div className="h-[40px] w-[40px] float-left mt-2 ml-4 rounded-full overflow-hidden">
+        <div className="h-[40px] w-[40px] float-left mt-2 ml-4 rounded-full overflow-hidden ">
           <img src={image} />
         </div>
         <div className="mr-6 pt-1 ml-16">
@@ -41,11 +41,13 @@ export default async function Tweet(
         <Link
           href={image}
         >
-          <img
-            src={"https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.rvSWtRd_oPRTwDoTCmkP5gHaE8%26pid%3DApi&f=1&ipt=e7b9e58ae470ca97e113c16d1c96b82c75b1c4cf113109e4e6bdd6e0a4cd03c4&ipo=images"}
-            className="mr-6 ml-16 border border-gray-700 rounded-xl overflow-hidden"
-            alt="Username"
-          />
+          <div className="mr-6 ml-16">
+            <img
+              src={"https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.rvSWtRd_oPRTwDoTCmkP5gHaE8%26pid%3DApi&f=1&ipt=e7b9e58ae470ca97e113c16d1c96b82c75b1c4cf113109e4e6bdd6e0a4cd03c4&ipo=images"}
+              className="border border-gray-700 rounded-xl overflow-hidden object-scale-down max-h-full and m-auto"
+              alt="Username"
+            />
+          </div>
         </Link>
         <LikeAndShare
           tweetId={tweetId}
