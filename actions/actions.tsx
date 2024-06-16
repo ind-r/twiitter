@@ -7,7 +7,8 @@ import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
 
-export const postTweet = async (username: string, e: FormData,) => {
+export const postTweet = async (username: string, e: FormData,)
+  : Promise<{ status: number } | undefined> => {
 
   try {
     const connect = await MongooseConnect();
@@ -24,14 +25,18 @@ export const postTweet = async (username: string, e: FormData,) => {
         user.tweets.push(result._id);
         user.save();
         revalidatePath("/home")
+        return { status: 200 }
       } else {
         console.log("err: posting the tweet!")
+        return { status: 500 };
       }
     } else {
       console.log("err: while posting user not found")
+      return { status: 500 };
     }
   } catch (err) {
     console.log(err);
+    return { status: 500 };
   }
 }
 

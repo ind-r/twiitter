@@ -1,6 +1,5 @@
 import Tweet from './tweet'
 import { TweetType } from '../../libs/models/tweetModel'
-import ReloadCircle from './reload-circle'
 import { getTweets } from "@/actions/actions"
 import { SessionType } from '../api/auth/[...nextauth]/options';
 
@@ -10,8 +9,7 @@ export default async function Tweets({ data }: { data: SessionType | null }) {
 
   return (
     <>
-      <ReloadCircle />
-      {(tweets) ? (
+      {(tweets?.length) ? (
         tweets.reverse().map(
           (tweet: TweetType) => {
             return <Tweet
@@ -23,7 +21,11 @@ export default async function Tweets({ data }: { data: SessionType | null }) {
             />
           }
         )
-      ) : (<div>No Tweets</div>)}
+      ) : (
+        <div className="text-center py-10 text-xl">
+          No Tweets
+        </div>
+      )}
     </ >
   )
 }

@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation'
 
 
 export default function ReloadCircle() {
-const router = useRouter()
+  const router = useRouter()
 
   return (
     <div
-      className={`cursor-pointer`}
+      className="cursor-pointer"
       onClick={() => {
-      router.refresh();
-      router.replace("/")
+        router.refresh();
+        router.replace("/")
       }}>
       <FontAwesomeIcon color="white" className={`flex justify-center w-full`} icon={faRotateRight} />
     </div>

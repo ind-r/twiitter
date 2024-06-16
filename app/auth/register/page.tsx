@@ -22,7 +22,7 @@ export default function Register() {
       <Form submit={submit} />
       <div className="flex flex-col pt-5">
         <div className="relative flex items-center">
-          <div className="flex-grow border-t border-gray-400"></div>
+          <div className="flex-grow border-t border-borderGray"></div>
           <span className="flex-shrink mx-4 text-gray-400">Or</span>
           <div className="flex-grow border-t border-gray-400"></div>
         </div>

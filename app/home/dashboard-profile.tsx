@@ -15,22 +15,24 @@ export default async function DashboardProfile() {
       redirect("/auth/callback-register")
     }
     return (
-      <div className="mt-auto mb-10">
-        {(httpsImage) ?
-          <Image
-            className="float-left h-10 w-10 rounded-full ml-10 "
-            alt="userImage"
-            height="100"
-            width="100"
-            src={image} /> :
-          <Image
-            className="float-left h-16 w-16 rounded-full "
-            alt="userImage"
-            height="100"
-            width="100"
-            src={"/default-user.png"} />
-        }
-        <h1 className="text-white text-lg p-3 ml-20">@{name}</h1>
+      <div className="hidden md:flex md:mt-auto md:mb-10 flex-row md:flex-col">
+        <div>
+          {(httpsImage) ?
+            <Image
+              className="float-left h-10 w-10 rounded-full ml-10 "
+              alt="userImage"
+              height="100"
+              width="100"
+              src={image} /> :
+            <Image
+              className="float-left h-16 w-16 rounded-full "
+              alt="userImage"
+              height="100"
+              width="100"
+              src={"/default-user.png"} />
+          }
+          <h1 className="text-white text-lg p-3 ml-20">@{name}</h1>
+        </div>
         <div className="ml-20 pt-5">
           <SignOut />
         </div>

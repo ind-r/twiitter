@@ -3,6 +3,8 @@ import Tweets from './tweets'
 import { getServerSession } from 'next-auth'
 import { SessionType, options } from '../api/auth/[...nextauth]/options'
 import PostTweet from './post-tweet'
+import ReloadCircle from './reload-circle'
+import TweetSkel from './tweet-skel'
 
 export default async function Home() {
   const data: SessionType | null = await getServerSession(options)
@@ -11,7 +13,8 @@ export default async function Home() {
       {data &&
         <PostTweet data={data} />
       }
-      <Suspense fallback={<p className="text-white text-4xl">Loading...</p>}>
+      <ReloadCircle />
+      <Suspense fallback={<><TweetSkel /><TweetSkel /><TweetSkel /><TweetSkel /><TweetSkel /></>}>
         <Tweets data={data} />
       </Suspense>
     </>

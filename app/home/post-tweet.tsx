@@ -1,13 +1,27 @@
+"use client"
 import { postTweet } from "@/actions/actions"
 import { Session } from "next-auth"
 import Image from 'next/image'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { Spinner } from "./spinner"
 
 export default function PostTweet({ data }: { data: Session }) {
-  if (data && data.user && data.user.name && data.user.image) {
-    const postTweetSubmit = postTweet.bind(null, data.user.name);
+
+  const [isDisabled, setDisabled] = useState(false);
+
+  if (data.user.image && data.user.name) {
+
     const image: string = data.user.image;
     let httpsImage: boolean = (image.includes("http") && image.includes("://"))
     const name = data.user.name
+
+    const postTweetSubmit = async (e: FormData) => {
+      setDisabled(true)
+      await postTweet(name, e);
+      setDisabled(false);
+    }
 
     return (
       <div className="pt-6 text-white">
@@ -28,18 +42,23 @@ export default function PostTweet({ data }: { data: Session }) {
         <form
           action={postTweetSubmit}
           className="ml-20 mr-3">
-          <textarea
-            className="border-gray-600 border rounded-2xl w-full bg-black p-2 resize-none h-32"
+          <Input
+            className="border-none"
+            placeholder="Whats happening!"
             name="tweet"
-            placeholder="Tweet away!"
-          >
-          </textarea>
-          <button
+          />
+
+          <Spinner
+            className={`${isDisabled ? "" : "hidden"}`}
+          />
+          <Button
+            variant="outline"
+            className={`my-3 ${isDisabled ? "hidden" : ""}`}
             type="submit"
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-700 rounded-full font-extrabold mt-2"
-          >Post</button>
+            disabled={isDisabled}
+          >Post</Button>
         </form>
-        <div className="h-[1px] w-full bg-gray-800 items-start mt-2"></div>
+        <div className="h-[1px] w-full bg-borderGray items-start mt-2"></div>
       </div>
     )
   }
