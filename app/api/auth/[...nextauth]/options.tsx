@@ -8,15 +8,15 @@ import { AdapterUser } from "next-auth/adapters";
 
 export interface SessionType extends Session {
   user: {
-    name: string,
-    email: string,
-    image: string,
-    userId: string,
-  }
+    name: string;
+    email: string;
+    image: string;
+    userId: string;
+  };
 }
 
 interface CustomProfile extends Profile {
-  picture?: string,
+  picture?: string;
 }
 
 export const options = {
@@ -32,23 +32,20 @@ export const options = {
         email: { label: "Email", type: "text", placeholder: "Email@mail.com" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (
-        credentials: Record<string, string> | undefined
-      ) => {
+      authorize: async (credentials: Record<string, string> | undefined) => {
         try {
           if (!credentials) {
             return null;
           }
           const db = await connectMongo();
-          if (credentials.email !== ' ') {
+          if (credentials.email !== " ") {
             var user: UserType | null = await UserMongo.findOne({
               email: credentials.email,
             });
           } else {
             var user: UserType | null = await UserMongo.findOne({
-              username: credentials.username
+              username: credentials.username,
             });
-
           }
 
           if (!user) {
@@ -135,17 +132,8 @@ export const options = {
         }
       }
       return token; // Return the modified token
-    }
-    ,
-    async session(
-      { session,
-        token,
-      }
-        :
-        {
-          session: any,
-          token: TokenSet
-        }) {
+    },
+    async session({ session, token }: { session: any; token: TokenSet }) {
       // this token return above jwt()
       session.accessToken = token.accessToken;
       session.user.userId = token.userId;
@@ -156,7 +144,7 @@ export const options = {
 
     async redirect() {
       const apiUrl = process.env.NEXTAUTH_URL as string;
-      return apiUrl;
+      return `${apiUrl}/home`;
     },
 
     async signIn({
@@ -205,7 +193,7 @@ export const options = {
         return true;
       }
       return false; // Ensure a boolean is returned if no condition is met
-    }
+    },
   },
 
   pages: {
