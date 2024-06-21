@@ -1,5 +1,6 @@
 // layout.tsx
-import { Providers } from "./providers";
+
+import { Providers } from "@/app/auth/callback-register/providers";
 
 export default function RootLayout({
   children,

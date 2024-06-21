@@ -42,7 +42,7 @@ export default async function Dashboard() {
             <p className="hidden lg:block">Profile</p>
           </Link>
           <Link
-            href="/settings"
+            href="/account/settings"
             className=" hidden md:block text-white text-2xl pl-0 p-3 ml-10"
           >
             <FontAwesomeIcon

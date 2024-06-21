@@ -1,42 +1,42 @@
-'use client'
-import { isEmailTakenAlready, isUsernameTakenAlready } from '@/actions/actions';
-import { useEffect, useState } from 'react';
+"use client";
+import { isEmailTakenAlready, isUsernameTakenAlready } from "@/actions/actions";
+import { useState } from "react";
 
 interface Props {
-  submit(user: { username: string, password: string, email: string }): void;
+  submit(user: { username: string; password: string; email: string }): void;
 }
 
 export default function Form({ submit }: Props) {
   const [user, setUser] = useState({
-    username: '',
-    password: '',
-    email: '',
-    verifyPassword: ''
-  })
+    username: "",
+    password: "",
+    email: "",
+    verifyPassword: "",
+  });
   const [errors, setErrors] = useState({
-    username: '',
-    password: '',
-    email: '',
-    verifyPassword: ''
-  })
+    username: "",
+    password: "",
+    email: "",
+    verifyPassword: "",
+  });
 
   const validateUser = async () => {
     let valid = true;
     let newErrors = { ...errors };
 
-
-    let isUsernameTaken = await isUsernameTakenAlready(user.username)
+    let isUsernameTaken = await isUsernameTakenAlready(user.username);
 
     if (isUsernameTaken) {
-      newErrors.username = 'Username already Exists'
+      newErrors.username = "Username already Exists";
       valid = false;
     } else if (user.username.includes("@") || /\s/.test(user.username)) {
-      newErrors.username = 'Username is invalid (cannot contain special characters)'
+      newErrors.username =
+        "Username is invalid (cannot contain special characters)";
       valid = false;
-    } else if (user.username.trim() === '') {
-      newErrors.username = 'Username is required'
+    } else if (user.username.trim() === "") {
+      newErrors.username = "Username is required";
       valid = false;
-    } else newErrors.username = '';
+    } else newErrors.username = "";
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     let isEmailTaken = await isEmailTakenAlready(user.email);
@@ -45,77 +45,93 @@ export default function Form({ submit }: Props) {
       newErrors.email = "Email already Taken";
       valid = false;
     } else if (!emailRegex.test(user.email)) {
-      newErrors.email = 'Invalid email address';
+      newErrors.email = "Invalid email address";
       valid = false;
-    } else newErrors.email = '';
-
+    } else newErrors.email = "";
 
     // Validate password
     if (user.password.length < 2) {
-      newErrors.password = 'Password must be at least 2 characters';
+      newErrors.password = "Password must be at least 2 characters";
       valid = false;
     } else if (/\s/.test(user.password)) {
-      newErrors.password = 'Password must not have spaces';
+      newErrors.password = "Password must not have spaces";
       valid = false;
     } else if (user.verifyPassword !== user.password) {
-      newErrors.verifyPassword = 'Passwords do not match';
+      newErrors.verifyPassword = "Passwords do not match";
       valid = false;
-    } else newErrors.verifyPassword = '';
+    } else newErrors.verifyPassword = "";
 
     setErrors(newErrors);
     return valid;
-  }
+  };
 
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value, name } = event.target;
     setUser((prevUser) => ({
       ...prevUser,
-      [name]: value
+      [name]: value,
     }));
-  };
+  }
 
   return (
     <form className="flex flex-col pt-8">
-      <label htmlFor="username" className="text-xl my-2">Username</label>
+      <label htmlFor="username" className="text-xl my-2">
+        Username
+      </label>
       <input
         onChange={handleChange}
         id="username"
         type="username"
         autoComplete="on"
         className="rounded-lg p-1 text-black"
-        name="username" />
+        name="username"
+      />
       <div>{errors.username}</div>
-      <label htmlFor="email" className="text-xl my-2">Email</label>
+      <label htmlFor="email" className="text-xl my-2">
+        Email
+      </label>
       <input
         onChange={handleChange}
         id="email"
         type="email"
         autoComplete="on"
         className="rounded-lg p-1 text-black"
-        name="email" />
+        name="email"
+      />
       <div>{errors.email}</div>
-      <label htmlFor="password" className="text-xl my-2">Password</label>
-      <input onChange={handleChange}
+      <label htmlFor="password" className="text-xl my-2">
+        Password
+      </label>
+      <input
+        onChange={handleChange}
         id="password"
         type="password"
         autoComplete="off"
         className="rounded-lg p-1 text-black"
-        name="password" />
+        name="password"
+      />
       <div>{errors.password}</div>
-      <label htmlFor="password-verify" className="text-xl my-2">Verify Password</label>
-      <input onChange={handleChange}
+      <label htmlFor="password-verify" className="text-xl my-2">
+        Verify Password
+      </label>
+      <input
+        onChange={handleChange}
         id="verifyPassword"
         type="password"
         autoComplete="off"
         className="rounded-lg p-1 text-black"
-        name="verifyPassword" />
+        name="verifyPassword"
+      />
       <div>{errors.verifyPassword}</div>
-      <button onClick={async () => {
-        if (await validateUser()) {
-          submit(user);
-        }
-      }} type="button"
-        className={`text-white rounded-lg p-2 mt-5 bg-red-800 hover:bg-red-900`}>
+      <button
+        onClick={async () => {
+          if (await validateUser()) {
+            submit(user);
+          }
+        }}
+        type="button"
+        className={`text-white rounded-lg p-2 mt-5 bg-red-800 hover:bg-red-900`}
+      >
         Register
       </button>
     </form>

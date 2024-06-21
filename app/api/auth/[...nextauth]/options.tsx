@@ -9,10 +9,15 @@ import { AdapterUser } from "next-auth/adapters";
 export interface SessionType extends Session {
   user: {
     name: string;
+    nickname: string;
     email: string;
     image: string;
     userId: string;
   };
+}
+
+interface UserToSubmit extends User {
+  nickname: string;
 }
 
 interface CustomProfile extends Profile {
@@ -61,9 +66,10 @@ export const options = {
             return null;
           }
 
-          const userToSubmit: User = {
+          const userToSubmit: UserToSubmit = {
             id: user._id,
             name: user.username,
+            nickname: user.nickname,
             email: user.email,
             image: user.image,
           };
@@ -95,7 +101,12 @@ export const options = {
       session?: any;
     }) {
       if (trigger === "update") {
-        token.name = session.name;
+        if (session.name) {
+          token.name = session.name;
+          token.nickname = session.nickname;
+        } else {
+          token.nickname = session.nickname;
+        }
         return token;
       }
       if (account) {
@@ -117,6 +128,7 @@ export const options = {
               // Update token with data from database
               token.userId = dbUser._id;
               token.name = dbUser.username;
+              token.nickname = dbUser.nickname;
               token.picture = dbUser.image;
             } else {
               console.log("User not found");
@@ -137,6 +149,7 @@ export const options = {
       // this token return above jwt()
       session.accessToken = token.accessToken;
       session.user.userId = token.userId;
+      session.user.nickname = token.nickname;
       //if you want to add user details info
       // console.log(session);
       return session;

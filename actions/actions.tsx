@@ -281,7 +281,7 @@ export const completeRegistration = async (
     const connect = await MongooseConnect();
     if (connect) {
       const user: UserType | null = await User.findById(userId);
-      console.log(user);
+      // console.log(user);
       if (user) {
         user.username = userO.username;
         user.nickname = userO.nickname;
@@ -297,5 +297,29 @@ export const completeRegistration = async (
     return false;
   } catch (err) {
     console.log({ error: err, status: 500 });
+  }
+};
+
+export const changeNickName = async (
+  userId: string,
+  nickname: string
+): Promise<{ status: number; message: string } | undefined> => {
+  try {
+    const connect = await MongooseConnect();
+    if (connect) {
+      const user: UserType | null = await User.findById(userId);
+      // console.log(user);
+      if (user) {
+        user.nickname = nickname;
+        user.save();
+        revalidatePath("/");
+        return { status: 200, message: "User saved" };
+      }
+      return { message: "User not found", status: 404 };
+    }
+    return { message: "Db Not Connected", status: 500 };
+  } catch (err) {
+    console.log(err);
+    return { message: "ERROR", status: 500 };
   }
 };
