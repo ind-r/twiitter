@@ -67,7 +67,10 @@ export default async function DashboardDropdown() {
             <Link href="/home">Home</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/settings">Settings</Link>
+            <Link href="/home/profile">Your Tweets</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href="/account/settings">Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <SignOut />
