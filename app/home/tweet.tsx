@@ -3,17 +3,20 @@ import { getUserInfo } from "@/actions/actions";
 import { SessionType } from "../api/auth/[...nextauth]/options";
 import LikeAndShare from "./likeAndShare";
 import Link from "next/link";
+import DeleteTweet from "./profile/DeleteTweet";
 
 export default async function Tweet({
   tweetContent,
   tweetId,
   userId,
   data,
+  mode,
 }: {
   tweetContent: string;
   userId: string;
   tweetId: string;
   data: SessionType | null;
+  mode: 0 | 1;
 }) {
   const tweetUser: UserInfo | undefined | null = await getUserInfo(userId);
   let sessionUserId: string | null = null;
@@ -31,6 +34,11 @@ export default async function Tweet({
           <h1 className="inline">{nickname} </h1>
           <h1 className="inline text-gray-600 text-sm">@{username}</h1>
         </div>
+        {mode === 1 && data ? (
+          <DeleteTweet tweetId={tweetId} userId={data?.user.userId} />
+        ) : (
+          <></>
+        )}
         <div className="mr-6 pb-1 ml-16">
           <h1>{tweetContent}</h1>
         </div>

@@ -1,20 +1,20 @@
-import mongoose, { Document } from 'mongoose'
+import mongoose, { Document } from "mongoose";
 
 export interface UserInfo {
-  username: string,
-  nickname: string,
-  image: string,
+  username: string;
+  nickname: string;
+  image: string;
 }
 export interface UserType extends Document {
-  email: string,
-  username: string,
-  nickname: string,
-  googleId?: string,
-  tweets: [string]
-  shares: string[]
-  likes: string[]
-  password: string,
-  image: string,
+  email: string;
+  username: string;
+  nickname: string;
+  googleId?: string;
+  tweets: string[];
+  shares: string[];
+  likes: string[];
+  password: string;
+  image: string;
 }
 
 const userSchema = new mongoose.Schema({
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // mongoose.models = {};
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 // var User = mongoose.model('User', userSchema);
 
 export default User;

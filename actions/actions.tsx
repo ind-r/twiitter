@@ -323,3 +323,55 @@ export const changeNickName = async (
     return { message: "ERROR", status: 500 };
   }
 };
+
+export const deleteTweet = async (
+  userId: string,
+  tweetId: string
+): Promise<{ status: number } | undefined> => {
+  try {
+    const connect = await MongooseConnect();
+    const user: UserType | null = await User.findById(userId);
+    if (user) {
+      const tweet: TweetType | null = await Tweet.findById(tweetId);
+      if (tweet) {
+        // Remove tweet from user's tweets
+        user.tweets = user.tweets.filter((t) => t !== tweetId);
+        await user.save();
+
+        // Remove tweetId from all users' likes and shares
+        const updateUsers = async (
+          userIds: string[],
+          field: "likes" | "shares"
+        ) => {
+          await Promise.all(
+            userIds.map(async (usrId) => {
+              const usr: UserType | null = await User.findById(usrId);
+              if (usr) {
+                usr[field] = usr[field].filter((twt) => twt !== tweetId);
+                await usr.save();
+              }
+            })
+          );
+        };
+
+        await updateUsers(tweet.likes, "likes");
+        await updateUsers(tweet.shares, "shares");
+
+        // Delete the tweet
+        await Tweet.findByIdAndDelete(tweetId);
+
+        revalidatePath("/home");
+        return { status: 200 };
+      } else {
+        console.log("err: tweet not found");
+        return { status: 500 };
+      }
+    } else {
+      console.log("err: user not found");
+      return { status: 500 };
+    }
+  } catch (err) {
+    console.error(err);
+    return { status: 500 };
+  }
+};

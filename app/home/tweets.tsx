@@ -26,6 +26,7 @@ export default async function Tweets({
               tweetId={tweet._id.toString()}
               userId={tweet.userId}
               data={data}
+              mode={mode}
             />
           );
         })
