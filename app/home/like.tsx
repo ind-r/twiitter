@@ -1,13 +1,20 @@
-"use client"
-import { likeDislike } from '@/actions/actions';
-import { faHeart } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useTransition } from 'react'
+"use client";
+import { likeDislike } from "@/actions/actions";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTransition } from "react";
 
-
-export default function Like({ tweetId, sessionUserId, likedBy }: { tweetId: string, sessionUserId: string, likedBy: boolean }) {
+export default function Like({
+  tweetId,
+  sessionUserId,
+  likedBy,
+}: {
+  tweetId: string;
+  sessionUserId: string;
+  likedBy: boolean;
+}) {
   const [isPending, startTransition] = useTransition();
-  let color = " "
+  let color = " ";
   if (likedBy) {
     color = "red";
   }
@@ -17,5 +24,5 @@ export default function Like({ tweetId, sessionUserId, likedBy }: { tweetId: str
     >
       <FontAwesomeIcon color={color} className="float-left" icon={faHeart} />
     </button>
-  )
+  );
 }

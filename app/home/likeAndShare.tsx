@@ -1,12 +1,23 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart } from '@fortawesome/free-solid-svg-icons'
-import { faRetweet } from '@fortawesome/free-solid-svg-icons'
-import { getLikedBy, getLikesOfTweet, getSharedBy, getSharesOfTweet } from '@/actions/actions';
-import Like from './like';
-import Share from './share';
-import Link from 'next/link';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faRetweet } from "@fortawesome/free-solid-svg-icons";
+import {
+  getLikedBy,
+  getLikesOfTweet,
+  getSharedBy,
+  getSharesOfTweet,
+} from "@/actions/actions";
+import Like from "./like";
+import Share from "./share";
+import Link from "next/link";
 
-export default async function LikeAndShare({ tweetId, sessionUserId }: { tweetId: string, sessionUserId: string | null }) {
+export default async function LikeAndShare({
+  tweetId,
+  sessionUserId,
+}: {
+  tweetId: string;
+  sessionUserId: string | null;
+}) {
   const likes: number | null | undefined = await getLikesOfTweet(tweetId);
   const shares: number | null | undefined = await getSharesOfTweet(tweetId);
 
@@ -32,8 +43,8 @@ export default async function LikeAndShare({ tweetId, sessionUserId }: { tweetId
           />
           <h1>{shares}</h1>
         </div>
-      </div >
-    )
+      </div>
+    );
   } else {
     return (
       <div className="mr-6 mt-4 pb-1 ml-20 flex justify-evenly text-gray-700">
@@ -46,13 +57,14 @@ export default async function LikeAndShare({ tweetId, sessionUserId }: { tweetId
         </Link>
         <Link
           href="auth/signin"
-          className="flex flex-col items-center cursor-pointer">
+          className="flex flex-col items-center cursor-pointer"
+        >
           <FontAwesomeIcon className="float-left" icon={faRetweet} />
           <h1>{shares}</h1>
         </Link>
       </div>
-    )
+    );
   }
 }
 
-// not loged in 
+// not loged in

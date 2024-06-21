@@ -1,15 +1,15 @@
-"use server"
+"use server";
 
-import MongooseConnect from "@/libs/MongooseConnect"
+import MongooseConnect from "@/libs/MongooseConnect";
 import Tweet, { TweetType } from "@/libs/models/tweetModel";
 import User, { UserInfo, UserType } from "@/libs/models/userModel";
 import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
-
-export const postTweet = async (username: string, e: FormData,)
-  : Promise<{ status: number } | undefined> => {
-
+export const postTweet = async (
+  username: string,
+  e: FormData
+): Promise<{ status: number } | undefined> => {
   try {
     const connect = await MongooseConnect();
     const user: UserType | null = await User.findOne({ username });
@@ -19,36 +19,46 @@ export const postTweet = async (username: string, e: FormData,)
         userId: user._id,
         likes: [],
         shares: [],
-      })
+      });
       let result = await newTweet.save();
       if (result) {
         user.tweets.push(result._id);
         user.save();
-        revalidatePath("/home")
-        return { status: 200 }
+        revalidatePath("/home");
+        return { status: 200 };
       } else {
-        console.log("err: posting the tweet!")
+        console.log("err: posting the tweet!");
         return { status: 500 };
       }
     } else {
-      console.log("err: while posting user not found")
+      console.log("err: while posting user not found");
       return { status: 500 };
     }
   } catch (err) {
     console.log(err);
     return { status: 500 };
   }
-}
+};
 
-export const getTweets = async () => {
+export const getTweets = async (
+  mode: number,
+  userId: string | undefined
+): Promise<Array<TweetType> | undefined> => {
   try {
     const connect = await MongooseConnect();
-    let tweets: Array<TweetType> = await Tweet.find();
-    return tweets;
+    if (mode === 0) {
+      let tweets: Array<TweetType> = await Tweet.find();
+      return tweets;
+    } else if (mode === 1 && userId) {
+      let tweets: Array<TweetType> = await Tweet.find({ userId });
+      return tweets;
+    }
+    return undefined;
   } catch (err) {
     console.log(err);
+    return undefined;
   }
-}
+};
 
 export const getUserInfo = async (userId: string) => {
   try {
@@ -59,15 +69,15 @@ export const getUserInfo = async (userId: string) => {
         username: user.username,
         nickname: user.nickname,
         image: user.image,
-      }
+      };
       return userToSend;
     }
-    console.log("user not found")
+    console.log("user not found");
     return null;
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 export const getLikesOfTweet = async (tweetId: string) => {
   try {
@@ -76,13 +86,12 @@ export const getLikesOfTweet = async (tweetId: string) => {
     if (tweet) {
       return tweet.likes.length;
     }
-    console.log("tweet not found")
+    console.log("tweet not found");
     return null;
   } catch (err) {
     console.log(err);
   }
-
-}
+};
 
 export const getSharesOfTweet = async (tweetId: string) => {
   try {
@@ -91,12 +100,12 @@ export const getSharesOfTweet = async (tweetId: string) => {
     if (tweet) {
       return tweet.shares.length;
     }
-    console.log("tweet not found")
+    console.log("tweet not found");
     return null;
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 export const likeDislike = async (tweetId: string, userId: string) => {
   try {
@@ -104,34 +113,34 @@ export const likeDislike = async (tweetId: string, userId: string) => {
     let tweet: TweetType | null = await Tweet.findById(tweetId);
     let user: UserType | null = await User.findById(userId);
     if (tweet && user) {
-
-      if (tweet.likes.includes(userId) && user.likes.includes(tweetId)) { // dislike
-        let arr: string[] = tweet.likes.filter(function(item) {
+      if (tweet.likes.includes(userId) && user.likes.includes(tweetId)) {
+        // dislike
+        let arr: string[] = tweet.likes.filter(function (item) {
           return item !== userId;
-        })
+        });
         tweet.likes = arr;
         tweet.save();
 
-        arr = user.likes.filter(function(item) {
+        arr = user.likes.filter(function (item) {
           return item !== tweetId;
-        })
+        });
         user.likes = arr;
         user.save();
-
-      } else { // like
+      } else {
+        // like
         tweet.likes.push(userId);
         tweet.save();
         user.likes.push(tweetId);
         user.save();
       }
     } else {
-      console.log("tweet and/or User not found ")
+      console.log("tweet and/or User not found ");
     }
   } catch (err) {
     console.log(err);
   }
-  revalidatePath("/home")
-}
+  revalidatePath("/home");
+};
 
 export const shareUnshare = async (tweetId: string, userId: string) => {
   try {
@@ -139,33 +148,34 @@ export const shareUnshare = async (tweetId: string, userId: string) => {
     let tweet: TweetType | null = await Tweet.findById(tweetId);
     let user: UserType | null = await User.findById(userId);
     if (tweet && user) {
-
-      if (tweet.shares.includes(userId) && user.shares.includes(tweetId)) { // unshare
-        let arr: string[] = tweet.shares.filter(function(item) {
+      if (tweet.shares.includes(userId) && user.shares.includes(tweetId)) {
+        // unshare
+        let arr: string[] = tweet.shares.filter(function (item) {
           return item !== userId;
-        })
+        });
         tweet.shares = arr;
         tweet.save();
 
-        arr = user.shares.filter(function(item) {
+        arr = user.shares.filter(function (item) {
           return item !== tweetId;
-        })
+        });
         user.shares = arr;
         user.save();
-      } else { // share
+      } else {
+        // share
         tweet.shares.push(userId);
         tweet.save();
         user.shares.push(tweetId);
         user.save();
       }
     } else {
-      console.log("tweet and/or User not found ")
+      console.log("tweet and/or User not found ");
     }
   } catch (err) {
     console.log(err);
   }
-  revalidatePath("/home")
-}
+  revalidatePath("/home");
+};
 export const getLikedBy = async (tweetId: string, userId: string) => {
   try {
     const connect = await MongooseConnect();
@@ -177,7 +187,7 @@ export const getLikedBy = async (tweetId: string, userId: string) => {
       }
       return false;
     } else {
-      console.log("tweet and/or User not found ")
+      console.log("tweet and/or User not found ");
       return false;
     }
   } catch (err) {
@@ -197,19 +207,18 @@ export const getSharedBy = async (tweetId: string, userId: string) => {
       }
       return false;
     } else {
-      console.log("tweet and/or User not found ")
+      console.log("tweet and/or User not found ");
       return false;
     }
   } catch (err) {
     console.log(err);
     return false;
   }
-
-}
+};
 
 export const isEmailTakenAlready = async (email: string) => {
   try {
-    const connect = await MongooseConnect()
+    const connect = await MongooseConnect();
     if (connect) {
       const user: UserType | null = await User.findOne({ email });
       if (user) {
@@ -226,7 +235,7 @@ export const isEmailTakenAlready = async (email: string) => {
 
 export const isUsernameTakenAlready = async (username: string) => {
   try {
-    const connect = await MongooseConnect()
+    const connect = await MongooseConnect();
     if (connect) {
       const user: UserType | null = await User.findOne({ username });
       if (user) {
@@ -238,10 +247,14 @@ export const isUsernameTakenAlready = async (username: string) => {
   } catch (err) {
     console.log(err);
   }
-  return null
+  return null;
 };
 
-export const registerUser = async (user: { username: string, password: string, email: string }) => {
+export const registerUser = async (user: {
+  username: string;
+  password: string;
+  email: string;
+}) => {
   try {
     const connect = await MongooseConnect();
     if (connect) {
@@ -258,11 +271,14 @@ export const registerUser = async (user: { username: string, password: string, e
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-export const completeRegistration = async (userO: { username: string, nickname: string }, userId: string) => {
+export const completeRegistration = async (
+  userO: { username: string; nickname: string },
+  userId: string
+) => {
   try {
-    const connect = await MongooseConnect()
+    const connect = await MongooseConnect();
     if (connect) {
       const user: UserType | null = await User.findById(userId);
       console.log(user);
@@ -270,17 +286,16 @@ export const completeRegistration = async (userO: { username: string, nickname: 
         user.username = userO.username;
         user.nickname = userO.nickname;
         user.save();
-        console.log({ status: 200, "message": "User saved" })
+        console.log({ status: 200, message: "User saved" });
 
         return true;
       }
-      console.log({ "message": "User not found", status: 404 })
+      console.log({ message: "User not found", status: 404 });
       return false;
     }
-    console.log({ "message": "Db Not Connected", status: 500 })
+    console.log({ message: "Db Not Connected", status: 500 });
     return false;
   } catch (err) {
-
-    console.log({ error: err, status: 500 })
+    console.log({ error: err, status: 500 });
   }
-}
+};
