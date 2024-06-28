@@ -1,35 +1,35 @@
-import { Button } from "@/components/ui/button";
-import { faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function page() {
   return (
     <>
-      <div className="container flex md:flex-row flex-col h-screen">
-        <div className="basis-1/2 flex justify-center items-center">
-          <Image
-            src="/advanceSociety.jpg"
-            height="3000"
-            width="3000"
-            alt="advance Society object-cover"
-            className="rounded-3xl"
-          />
+      <section className="relative bg-[url(/advanceSociety.jpg)] bg-cover bg-center bg-no-repeat">
+        <div className="absolute inset-0 bg-black/75 sm:bg-transparent sm:from-black/95 sm:to-gray-900/25 sm:bg-gradient-to-r"></div>
+        <div className="relative mx-auto max-w-screen-xl px-4 py-32 sm:px-6 lg:flex h-screen lg:items-center lg:px-8">
+          <div className="max-w-xl text-center sm:text-left rtl:sm:text-right">
+            <h1 className="text-3xl font-extrabold text-white sm:text-5xl">
+              Welcome To Your
+              <strong className="block font-extrabold text-blue-500">
+                {" "}
+                Forever Home.{" "}
+              </strong>
+            </h1>
+
+            <p className="mt-4 max-w-lg text-white sm:text-xl/relaxed">
+              Twitter
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4 text-center">
+              <Link
+                href="/home"
+                className="block w-full rounded bg-blue-700 px-12 py-3 text-sm font-medium text-white shadow hover:bg-blue-800 focus:outline-none focus:ring active:bg-blue-900 sm:w-auto"
+              >
+                We are waiting.
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col justify-evenly items-center basis-1/2">
-          <FontAwesomeIcon icon={faX} className="text-8xl" />
-          <h1 className="sm:text-5xl text-4xl">Welcome to Twitter</h1>
-          <Link href="/home">
-            <Button
-              className="text-xl p-8 rounded-2xl border-2"
-              variant="outline"
-            >
-              Home
-            </Button>
-          </Link>
-        </div>
-      </div>
+      </section>
     </>
   );
 }
