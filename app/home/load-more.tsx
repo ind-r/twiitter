@@ -1,6 +1,6 @@
 "use client";
 
-import { getTweets } from "@/actions/actions";
+import { fullTweet, getTweets } from "@/actions/actions";
 import { TweetType } from "@/libs/models/tweetModel";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -15,21 +15,22 @@ export function LoadMore({
   data: SessionType | null;
   mode: 1 | 0;
 }) {
-  const [tweets, setTweets] = useState<TweetType[]>([]);
+  const [tweets, setTweets] = useState<fullTweet[]>([]);
   const [pagesLoaded, setPagesLoaded] = useState(0);
   const [click, setClick] = useState(false);
   const { ref, inView } = useInView();
 
   const loadMoreTweets = async () => {
     const nextPage = pagesLoaded + 1;
-    const newTweets: Array<TweetType> | undefined = await getTweets(
+    const newTweets: Array<fullTweet> | undefined = await getTweets(
       mode,
       data?.user?.userId,
       nextPage,
       14,
     );
+    console.log(newTweets);
     if (newTweets) {
-      setTweets((prevTweets: TweetType[]) => [...prevTweets, ...newTweets]);
+      setTweets((prevTweets: fullTweet[]) => [...prevTweets, ...newTweets]);
       setPagesLoaded(nextPage);
     }
   };
@@ -43,13 +44,15 @@ export function LoadMore({
   return (
     <>
       {tweets?.length ? (
-        tweets.map((tweet: TweetType) => {
+        tweets.map((tweet: fullTweet) => {
           return (
             <Tweet
               key={tweet._id}
               tweetContent={tweet.tweetContent}
-              tweetId={tweet._id.toString()}
-              userId={tweet.userId}
+              tweetId={tweet._id}
+              username={tweet.username}
+              nickname={tweet.nickname}
+              image={tweet.image}
               data={data}
               mode={mode}
             />

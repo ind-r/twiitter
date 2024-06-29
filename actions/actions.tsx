@@ -1,5 +1,6 @@
 "use server";
 
+import Profile from "@/app/home/profile/page";
 import MongooseConnect from "@/libs/MongooseConnect";
 import Tweet, { TweetType } from "@/libs/models/tweetModel";
 import User, { UserInfo, UserType } from "@/libs/models/userModel";
@@ -41,16 +42,26 @@ export const postTweet = async (
   }
 };
 
+export interface fullTweet {
+  _id: string;
+  tweetContent: string;
+  likes: string[];
+  shares: string[];
+  username: string;
+  nickname: string;
+  image: string;
+}
 export const getTweets = async (
   mode: number,
   userId: string | undefined,
   page: number,
   pageSize: number,
-): Promise<Array<TweetType> | undefined> => {
+): Promise<Array<fullTweet> | undefined> => {
   try {
     const connect = await MongooseConnect();
+    let tweets: any | null = null;
     if (mode === 0) {
-      let tweets = await Tweet.aggregate([
+      tweets = await Tweet.aggregate([
         {
           $sort: { createdAt: -1 }, // Sort by createdAt in descending order
         },
@@ -61,10 +72,8 @@ export const getTweets = async (
           },
         },
       ]);
-      console.log(tweets[0].data);
-      return tweets[0].data;
     } else if (mode === 1 && userId) {
-      let tweets = await Tweet.aggregate([
+      tweets = await Tweet.aggregate([
         {
           $sort: { createdAt: -1 }, // Sort by createdAt in descending order
         },
@@ -78,7 +87,28 @@ export const getTweets = async (
           },
         },
       ]);
-      return tweets[0].data;
+    }
+    if (tweets) {
+      const tweetsToSend = await Promise.all(
+        tweets[0].data.map(async (tweet: TweetType) => {
+          const user = await User.findById(tweet.userId);
+          if (user) {
+            let t = {
+              _id: tweet._id.toString(),
+              tweetContent: tweet.tweetContent,
+              likes: tweet.likes,
+              shares: tweet.shares,
+              username: user.username,
+              nickname: user.nickname,
+              image: user.image,
+            };
+            return t;
+          }
+          return {};
+        }),
+      );
+      console.log(tweetsToSend);
+      return tweetsToSend;
     }
     return undefined;
   } catch (err) {
