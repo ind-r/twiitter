@@ -29,6 +29,8 @@ const userSchema = new mongoose.Schema({
   image: String,
 });
 
+userSchema.set("timestamps", true);
+
 // mongoose.models = {};
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 // var User = mongoose.model('User', userSchema);

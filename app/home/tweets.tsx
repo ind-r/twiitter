@@ -2,6 +2,7 @@ import Tweet from "./tweet";
 import { TweetType } from "../../libs/models/tweetModel";
 import { getTweets } from "@/actions/actions";
 import { SessionType } from "../api/auth/[...nextauth]/options";
+import { LoadMore } from "./load-more";
 
 export default async function Tweets({
   data,
@@ -10,15 +11,17 @@ export default async function Tweets({
   data: SessionType | null;
   mode: 0 /* all tweets */ | 1 /* userTweets */;
 }) {
-  const tweets: Array<TweetType> | undefined = await getTweets(
-    mode,
-    data?.user?.userId
-  );
+  // const tweets: Array<TweetType> | undefined = await getTweets(
+  //   mode,
+  //   data?.user?.userId,
+  //   1,
+  //   10,
+  // );
 
   return (
     <>
-      {tweets?.length ? (
-        tweets.reverse().map((tweet: TweetType) => {
+      {/* tweets?.length ? (
+        tweets.map((tweet: TweetType) => {
           return (
             <Tweet
               key={tweet._id}
@@ -32,7 +35,8 @@ export default async function Tweets({
         })
       ) : (
         <div className="text-center py-10 text-xl">No Tweets</div>
-      )}
+      ) */}
+      <LoadMore data={data} mode={mode} />
     </>
   );
 }

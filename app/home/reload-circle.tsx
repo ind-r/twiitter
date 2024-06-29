@@ -11,7 +11,7 @@ export default function ReloadCircle() {
       className="cursor-pointer"
       onClick={() => {
         router.refresh();
-        router.replace("/");
+        router.replace("/home");
       }}
     >
       <FontAwesomeIcon

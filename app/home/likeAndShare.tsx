@@ -1,3 +1,4 @@
+"use client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faRetweet } from "@fortawesome/free-solid-svg-icons";
@@ -10,20 +11,45 @@ import {
 import Like from "./like";
 import Share from "./share";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import Profile from "./profile/page";
 
-export default async function LikeAndShare({
+export default function LikeAndShare({
   tweetId,
   sessionUserId,
 }: {
   tweetId: string;
   sessionUserId: string | null;
 }) {
-  const likes: number | null | undefined = await getLikesOfTweet(tweetId);
-  const shares: number | null | undefined = await getSharesOfTweet(tweetId);
-
-  if (sessionUserId && tweetId) {
+  const [likes, setLikes] = useState<number>(1);
+  const [shares, setShares] = useState<number>(1);
+  const [likedBy, setLikedBy] = useState<boolean>(false);
+  const [sharedBy, setSharedBy] = useState<boolean>(false);
+  const getLikesAndShares = async () => {
+    const likes: number | null | undefined = await getLikesOfTweet(tweetId);
+    const shares: number | null | undefined = await getSharesOfTweet(tweetId);
+    if (likes && shares) {
+      setLikes(likes);
+      setShares(shares);
+    }
+  };
+  const getLikedBySharedBy = async (sessionUserId: string) => {
     const likedBy: boolean = await getLikedBy(tweetId, sessionUserId);
     const sharedBy: boolean = await getSharedBy(tweetId, sessionUserId);
+    if (likedBy && sharedBy) {
+      setLikedBy(likedBy);
+      setSharedBy(sharedBy);
+    }
+  };
+
+  useEffect(() => {
+    getLikesAndShares();
+    if (sessionUserId && tweetId) {
+      getLikedBySharedBy(sessionUserId);
+    }
+  }, []);
+
+  if (sessionUserId && tweetId) {
     return (
       <div className="mr-6 mt-4 pb-1 ml-20 flex justify-evenly text-gray-700">
         <div className="flex flex-col items-center">
