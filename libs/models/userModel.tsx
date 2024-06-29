@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
   password: String,
   image: String,
 });
+userSchema.set("timestamps", true);
 
 // mongoose.models = {};
 const User = mongoose.models.User || mongoose.model("User", userSchema);
