@@ -1,21 +1,22 @@
 "use server";
 
 import MongooseConnect from "@/libs/MongooseConnect";
-import Tweet, { TweetType } from "@/libs/models/tweetModel";
-import User, { UserInfo, UserType } from "@/libs/models/userModel";
+import Tweet from "@/libs/models/tweetModel";
+import User from "@/libs/models/userModel";
 import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { TweetModes, TweetType, UserInfo, UserType, fullTweet } from "./util";
 
 export const postTweet = async (
   username: string,
-  e: FormData
+  tweet: string,
 ): Promise<{ status: number } | undefined> => {
   try {
     const connect = await MongooseConnect();
     const user: UserType | null = await User.findOne({ username });
     if (user) {
       let newTweet: TweetType = await new Tweet({
-        tweetContent: e.get("tweet"),
+        tweetContent: tweet,
         userId: user._id,
         likes: [],
         shares: [],
@@ -24,7 +25,7 @@ export const postTweet = async (
       if (result) {
         user.tweets.push(result._id);
         user.save();
-        revalidatePath("/home");
+        revalidatePath("/");
         return { status: 200 };
       } else {
         console.log("err: posting the tweet!");
@@ -41,17 +42,73 @@ export const postTweet = async (
 };
 
 export const getTweets = async (
-  mode: number,
-  userId: string | undefined
-): Promise<Array<TweetType> | undefined> => {
+  mode: string,
+  userId: string | undefined,
+  page: number,
+  pageSize: number,
+): Promise<Array<fullTweet> | undefined> => {
   try {
     const connect = await MongooseConnect();
-    if (mode === 0) {
-      let tweets: Array<TweetType> = await Tweet.find();
-      return tweets;
-    } else if (mode === 1 && userId) {
-      let tweets: Array<TweetType> = await Tweet.find({ userId });
-      return tweets;
+    let tweets: any | null = null;
+    if (mode === TweetModes.allTweets) {
+      tweets = await Tweet.aggregate([
+        {
+          $sort: { createdAt: -1 }, // Sort by createdAt in descending order
+        },
+        {
+          $facet: {
+            metadata: [{ $count: "totalCount" }],
+            data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
+          },
+        },
+      ]);
+    } else if (TweetModes.userTweets && userId) {
+      tweets = await Tweet.aggregate([
+        {
+          $sort: { createdAt: -1 }, // Sort by createdAt in descending order
+        },
+        {
+          $match: { userId: userId },
+        },
+        {
+          $facet: {
+            metadata: [{ $count: "totalCount" }],
+            data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
+          },
+        },
+      ]);
+    }
+    if (tweets) {
+      const tweetsToSend = await Promise.all(
+        tweets[0].data.map(async (tweet: TweetType) => {
+          const user = await User.findById(tweet.userId);
+          if (user) {
+            let t: fullTweet = {
+              _id: tweet._id.toString(),
+              tweetContent: tweet.tweetContent,
+              likes: tweet.likes.length,
+              shares: tweet.shares.length,
+              username: user.username,
+              nickname: user.nickname,
+              image: user.image,
+              likedBy: false,
+              sharedBy: false,
+            };
+            if (userId) {
+              if (tweet.likes.includes(userId)) {
+                t.likedBy = true;
+              }
+              if (tweet.shares.includes(userId)) {
+                t.sharedBy = true;
+              }
+            }
+            return t;
+          }
+          return {};
+        }),
+      );
+      // console.log(tweetsToSend);
+      return tweetsToSend;
     }
     return undefined;
   } catch (err) {
@@ -176,45 +233,33 @@ export const shareUnshare = async (tweetId: string, userId: string) => {
   }
   revalidatePath("/home");
 };
-export const getLikedBy = async (tweetId: string, userId: string) => {
-  try {
-    const connect = await MongooseConnect();
-    let tweet: TweetType | null = await Tweet.findById(tweetId);
-    let user: UserType | null = await User.findById(userId);
-    if (tweet && user) {
-      if (tweet.likes.includes(userId) && user.likes.includes(tweetId)) {
-        return true;
-      }
-      return false;
-    } else {
-      console.log("tweet and/or User not found ");
-      return false;
-    }
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
-};
 
-export const getSharedBy = async (tweetId: string, userId: string) => {
-  try {
-    const connect = await MongooseConnect();
-    let tweet: TweetType | null = await Tweet.findById(tweetId);
-    let user: UserType | null = await User.findById(userId);
-    if (tweet && user) {
-      if (tweet.shares.includes(userId) && user.shares.includes(tweetId)) {
-        return true;
-      }
-      return false;
-    } else {
-      console.log("tweet and/or User not found ");
-      return false;
-    }
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
-};
+// export const getLikedShared = async (
+//   tweetId: string,
+//   userId: string,
+// ): Promise<{ liked: boolean; shared: boolean } | null> => {
+//   try {
+//     const connect = await MongooseConnect();
+//     let tweet: TweetType | null = await Tweet.findById(tweetId);
+//     let user: UserType | null = await User.findById(userId);
+//     let likeAShare = { liked: false, shared: false };
+//     if (tweet && user) {
+//       if (tweet.likes.includes(userId) && user.likes.includes(tweetId)) {
+//         likeAShare.liked = true;
+//       }
+//       if (tweet.shares.includes(userId) && user.shares.includes(tweetId)) {
+//         likeAShare.shared = true;
+//       }
+//       return likeAShare;
+//     } else {
+//       console.log("tweet and/or User not found ");
+//       return null;
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     return null;
+//   }
+// };
 
 export const isEmailTakenAlready = async (email: string) => {
   try {
@@ -275,7 +320,7 @@ export const registerUser = async (user: {
 
 export const completeRegistration = async (
   userO: { username: string; nickname: string },
-  userId: string
+  userId: string,
 ) => {
   try {
     const connect = await MongooseConnect();
@@ -302,7 +347,7 @@ export const completeRegistration = async (
 
 export const changeNickName = async (
   userId: string,
-  nickname: string
+  nickname: string,
 ): Promise<{ status: number; message: string } | undefined> => {
   try {
     const connect = await MongooseConnect();
@@ -326,7 +371,7 @@ export const changeNickName = async (
 
 export const deleteTweet = async (
   userId: string,
-  tweetId: string
+  tweetId: string,
 ): Promise<{ status: number } | undefined> => {
   try {
     const connect = await MongooseConnect();
@@ -341,7 +386,7 @@ export const deleteTweet = async (
         // Remove tweetId from all users' likes and shares
         const updateUsers = async (
           userIds: string[],
-          field: "likes" | "shares"
+          field: "likes" | "shares",
         ) => {
           await Promise.all(
             userIds.map(async (usrId) => {
@@ -350,7 +395,7 @@ export const deleteTweet = async (
                 usr[field] = usr[field].filter((twt) => twt !== tweetId);
                 await usr.save();
               }
-            })
+            }),
           );
         };
 

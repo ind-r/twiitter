@@ -2,27 +2,41 @@
 import { likeDislike } from "@/actions/actions";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 export default function Like({
   tweetId,
   sessionUserId,
   likedBy,
+  likes,
 }: {
   tweetId: string;
   sessionUserId: string;
   likedBy: boolean;
+  likes: number;
 }) {
   const [isPending, startTransition] = useTransition();
-  let color = " ";
-  if (likedBy) {
-    color = "red";
-  }
+  const [likeCount, setLikeCount] = useState(likes);
+  const [isLikedBy, setIsLikedBy] = useState(likedBy);
   return (
-    <button
-      onClick={() => startTransition(() => likeDislike(tweetId, sessionUserId))}
-    >
-      <FontAwesomeIcon color={color} className="float-left" icon={faHeart} />
-    </button>
+    <>
+      <button
+        disabled={isPending}
+        onClick={() => {
+          if (!isPending) {
+            startTransition(() => likeDislike(tweetId, sessionUserId));
+            setLikeCount((prev) => (isLikedBy ? prev - 1 : prev + 1));
+            setIsLikedBy(!isLikedBy);
+          }
+        }}
+      >
+        <FontAwesomeIcon
+          color={isLikedBy ? "red" : "gray-500"}
+          className="float-left"
+          icon={faHeart}
+        />
+      </button>
+      <h1>{likeCount}</h1>
+    </>
   );
 }

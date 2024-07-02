@@ -5,7 +5,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
 
 export const metadata: Metadata = {
-  title: "Twitter Clone",
+  title: "Twiitter",
   description: "Made by Inderpreet インダー with love",
 };
 

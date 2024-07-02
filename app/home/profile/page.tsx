@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import TweetSkel from "../tweet-skel";
 import Tweets from "../tweets";
 import { redirect } from "next/navigation";
+import { TweetModes } from "@/actions/util";
 
 export default async function Profile() {
   const data: SessionType | null = await getServerSession(options);
@@ -25,7 +26,7 @@ export default async function Profile() {
             </>
           }
         >
-          <Tweets data={data} mode={1} />
+          <Tweets data={data} mode={TweetModes.userTweets} />
         </Suspense>
       </>
     );

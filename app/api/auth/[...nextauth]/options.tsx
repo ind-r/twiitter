@@ -1,10 +1,11 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import connectMongo from "../../../../libs/MongooseConnect";
-import UserMongo, { UserType } from "../../../../libs/models/userModel";
+import UserMongo from "../../../../libs/models/userModel";
 import { compare } from "bcryptjs";
 import { Account, Profile, Session, TokenSet, User } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
+import { UserType } from "@/actions/util";
 
 export interface SessionType extends Session {
   user: {
@@ -59,7 +60,7 @@ export const options = {
 
           const checkPassword = await compare(
             credentials.password,
-            user.password
+            user.password,
           );
 
           if (!checkPassword) {

@@ -16,7 +16,7 @@ export default function page() {
             </h1>
 
             <p className="mt-4 max-w-lg text-white sm:text-xl/relaxed">
-              Twitter
+              Twiitter
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4 text-center">
