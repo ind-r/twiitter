@@ -1,12 +1,11 @@
 "use server";
 
-import Profile from "@/app/home/profile/page";
 import MongooseConnect from "@/libs/MongooseConnect";
-import Tweet, { TweetType } from "@/libs/models/tweetModel";
-import User, { UserInfo, UserType } from "@/libs/models/userModel";
+import Tweet from "@/libs/models/tweetModel";
+import User from "@/libs/models/userModel";
 import { hash } from "bcryptjs";
-import { Aggregate } from "mongoose";
 import { revalidatePath } from "next/cache";
+import { TweetModes, TweetType, UserInfo, UserType, fullTweet } from "./util";
 
 export const postTweet = async (
   username: string,
@@ -42,17 +41,8 @@ export const postTweet = async (
   }
 };
 
-export interface fullTweet {
-  _id: string;
-  tweetContent: string;
-  likes: string[];
-  shares: string[];
-  username: string;
-  nickname: string;
-  image: string;
-}
 export const getTweets = async (
-  mode: number,
+  mode: string,
   userId: string | undefined,
   page: number,
   pageSize: number,
@@ -60,7 +50,7 @@ export const getTweets = async (
   try {
     const connect = await MongooseConnect();
     let tweets: any | null = null;
-    if (mode === 0) {
+    if (mode === TweetModes.allTweets) {
       tweets = await Tweet.aggregate([
         {
           $sort: { createdAt: -1 }, // Sort by createdAt in descending order
@@ -72,7 +62,7 @@ export const getTweets = async (
           },
         },
       ]);
-    } else if (mode === 1 && userId) {
+    } else if (TweetModes.userTweets && userId) {
       tweets = await Tweet.aggregate([
         {
           $sort: { createdAt: -1 }, // Sort by createdAt in descending order
@@ -93,21 +83,31 @@ export const getTweets = async (
         tweets[0].data.map(async (tweet: TweetType) => {
           const user = await User.findById(tweet.userId);
           if (user) {
-            let t = {
+            let t: fullTweet = {
               _id: tweet._id.toString(),
               tweetContent: tweet.tweetContent,
-              likes: tweet.likes,
-              shares: tweet.shares,
+              likes: tweet.likes.length,
+              shares: tweet.shares.length,
               username: user.username,
               nickname: user.nickname,
               image: user.image,
+              likedBy: false,
+              sharedBy: false,
             };
+            if (userId) {
+              if (tweet.likes.includes(userId)) {
+                t.likedBy = true;
+              }
+              if (tweet.shares.includes(userId)) {
+                t.sharedBy = true;
+              }
+            }
             return t;
           }
           return {};
         }),
       );
-      console.log(tweetsToSend);
+      // console.log(tweetsToSend);
       return tweetsToSend;
     }
     return undefined;
@@ -233,45 +233,33 @@ export const shareUnshare = async (tweetId: string, userId: string) => {
   }
   revalidatePath("/home");
 };
-export const getLikedBy = async (tweetId: string, userId: string) => {
-  try {
-    const connect = await MongooseConnect();
-    let tweet: TweetType | null = await Tweet.findById(tweetId);
-    let user: UserType | null = await User.findById(userId);
-    if (tweet && user) {
-      if (tweet.likes.includes(userId) && user.likes.includes(tweetId)) {
-        return true;
-      }
-      return false;
-    } else {
-      console.log("tweet and/or User not found ");
-      return false;
-    }
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
-};
 
-export const getSharedBy = async (tweetId: string, userId: string) => {
-  try {
-    const connect = await MongooseConnect();
-    let tweet: TweetType | null = await Tweet.findById(tweetId);
-    let user: UserType | null = await User.findById(userId);
-    if (tweet && user) {
-      if (tweet.shares.includes(userId) && user.shares.includes(tweetId)) {
-        return true;
-      }
-      return false;
-    } else {
-      console.log("tweet and/or User not found ");
-      return false;
-    }
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
-};
+// export const getLikedShared = async (
+//   tweetId: string,
+//   userId: string,
+// ): Promise<{ liked: boolean; shared: boolean } | null> => {
+//   try {
+//     const connect = await MongooseConnect();
+//     let tweet: TweetType | null = await Tweet.findById(tweetId);
+//     let user: UserType | null = await User.findById(userId);
+//     let likeAShare = { liked: false, shared: false };
+//     if (tweet && user) {
+//       if (tweet.likes.includes(userId) && user.likes.includes(tweetId)) {
+//         likeAShare.liked = true;
+//       }
+//       if (tweet.shares.includes(userId) && user.shares.includes(tweetId)) {
+//         likeAShare.shared = true;
+//       }
+//       return likeAShare;
+//     } else {
+//       console.log("tweet and/or User not found ");
+//       return null;
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     return null;
+//   }
+// };
 
 export const isEmailTakenAlready = async (email: string) => {
   try {

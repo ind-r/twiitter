@@ -1,19 +1,5 @@
 import mongoose, { Document } from "mongoose";
 
-export interface SimpleTweet {
-  userId: string;
-  tweetContent: string;
-  likes: string[];
-  shares: string[];
-}
-
-export interface TweetType extends Document {
-  userId: string;
-  tweetContent: string;
-  likes: string[];
-  shares: string[];
-}
-
 const tweetSchema = new mongoose.Schema({
   userId: String,
   tweetContent: String,

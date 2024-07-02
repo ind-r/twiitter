@@ -5,6 +5,7 @@ import { SessionType, options } from "../api/auth/[...nextauth]/options";
 import PostTweet from "./post-tweet";
 import ReloadCircle from "./reload-circle";
 import TweetSkel from "./tweet-skel";
+import { TweetModes } from "@/actions/util";
 
 export default async function Home() {
   const data: SessionType | null = await getServerSession(options);
@@ -23,7 +24,7 @@ export default async function Home() {
           </>
         }
       >
-        <Tweets data={data} mode={0} />
+        <Tweets data={data} mode={TweetModes.allTweets} />
       </Suspense>
     </>
   );
