@@ -9,16 +9,36 @@ import { Spinner } from "./spinner";
 
 export default function PostTweet({ data }: { data: Session }) {
   const [isDisabled, setDisabled] = useState(false);
+  const [tweet, setTweet] = useState<string>("");
 
   if (data.user.image && data.user.name) {
     const image: string = data.user.image;
     let httpsImage: boolean = image.includes("http") && image.includes("://");
     const name = data.user.name;
 
-    const postTweetSubmit = async (e: FormData) => {
+    const postTweetSubmit = async () => {
       setDisabled(true);
-      await postTweet(name, e);
+      let t = tweet.trim;
+      if (tweet.trim().length != 0) {
+        console.log(tweet);
+        await postTweet(name, tweet);
+      } else {
+        alert("aww hell nah");
+      }
       setDisabled(false);
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      // Prevent newlines from being entered
+      if (
+        event.target.value.includes("\n") ||
+        event.target.value.includes("\r") ||
+        event.target.value.includes("\t")
+      ) {
+        event.preventDefault();
+        return;
+      }
+      setTweet(event.target.value);
     };
 
     return (
@@ -40,15 +60,17 @@ export default function PostTweet({ data }: { data: Session }) {
             src={"/default-user.png"}
           />
         )}
-        <form action={postTweetSubmit} className="ml-20 mr-3">
+        <form className="ml-20 mr-3">
           <Input
             className="border-none"
             placeholder="Whats happening!"
+            onChange={handleInputChange}
             name="tweet"
           />
 
           <Spinner className={`${isDisabled ? "" : "hidden"}`} />
           <Button
+            onClick={postTweetSubmit}
             variant="outline"
             className={`my-3 ${isDisabled ? "hidden" : ""}`}
             type="submit"

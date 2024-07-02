@@ -9,14 +9,14 @@ import { TweetModes, TweetType, UserInfo, UserType, fullTweet } from "./util";
 
 export const postTweet = async (
   username: string,
-  e: FormData,
+  tweet: string,
 ): Promise<{ status: number } | undefined> => {
   try {
     const connect = await MongooseConnect();
     const user: UserType | null = await User.findOne({ username });
     if (user) {
       let newTweet: TweetType = await new Tweet({
-        tweetContent: e.get("tweet"),
+        tweetContent: tweet,
         userId: user._id,
         likes: [],
         shares: [],
@@ -25,7 +25,7 @@ export const postTweet = async (
       if (result) {
         user.tweets.push(result._id);
         user.save();
-        revalidatePath("/home");
+        revalidatePath("/");
         return { status: 200 };
       } else {
         console.log("err: posting the tweet!");

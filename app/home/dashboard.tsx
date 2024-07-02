@@ -14,7 +14,7 @@ export default async function Dashboard() {
         href="/home"
         className="text-white text-2xl pl-0 p-3 ml-10 md:pt-10 md:pb-20"
       >
-        <p className=" font-extrabold lg:inline">TWITTER</p>
+        <p className=" font-extrabold lg:inline">TWIITTER</p>
       </Link>
 
       <Link
