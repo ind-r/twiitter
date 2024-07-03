@@ -1,5 +1,5 @@
 "use client";
-import { TweetModes } from "@/actions/util";
+import { TweetModes } from "@/types/enums";
 import { SessionType } from "../api/auth/[...nextauth]/options";
 import LikeAndShare from "./likeAndShare";
 import DeleteTweet from "./profile/DeleteTweet";

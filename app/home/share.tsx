@@ -1,5 +1,6 @@
 "use  client";
-import { shareUnshare } from "@/actions/actions";
+import { share } from "@/actions/likeShare";
+import { ShareModes } from "@/types/enums";
 import { faRetweet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useTransition } from "react";
@@ -24,7 +25,9 @@ export default function Share({
         disabled={isPending}
         onClick={() => {
           if (!isPending) {
-            startTransition(() => shareUnshare(tweetId, sessionUserId));
+            startTransition(() =>
+              share(ShareModes.tweet, tweetId, sessionUserId),
+            );
             setShareCount((prev) => (isSharedBy ? prev - 1 : prev + 1));
             setIsSharedBy(!isSharedBy);
           }

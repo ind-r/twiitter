@@ -1,8 +1,5 @@
 "use client";
-import {
-  completeRegistration,
-  isUsernameTakenAlready,
-} from "@/actions/actions";
+import { completeRegistration, isUsernameTakenAlready } from "@/actions/auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

@@ -1,5 +1,5 @@
 "use client";
-import { isEmailTakenAlready, isUsernameTakenAlready } from "@/actions/actions";
+import { isEmailTakenAlready, isUsernameTakenAlready } from "@/actions/auth";
 import { useState } from "react";
 
 interface Props {

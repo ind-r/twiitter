@@ -1,5 +1,5 @@
 "use client";
-import { deleteTweet } from "@/actions/actions";
+import { deleteTweet } from "@/actions/tweets";
 import { Button } from "@/components/ui/button";
 import { faRemove } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

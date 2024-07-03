@@ -1,5 +1,5 @@
 "use client";
-import { changeNickName } from "@/actions/actions";
+import { changeNickName } from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSession } from "next-auth/react";

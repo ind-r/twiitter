@@ -1,13 +1,14 @@
 "use client";
 
-import { getTweets } from "@/actions/actions";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import Tweet from "./tweet";
 import { SessionType } from "../api/auth/[...nextauth]/options";
 import { Spinner } from "./spinner";
 import TweetSkel from "./tweet-skel";
-import { TweetModes, fullTweet } from "@/actions/util";
+import { TweetModes } from "@/types/enums";
+import { IModTweet } from "@/types/models/tweet";
+import { getTweets } from "@/actions/tweets";
 // import Profile from "./profile/page";
 
 export default function Tweets({
@@ -17,7 +18,7 @@ export default function Tweets({
   data: SessionType | null;
   mode: TweetModes;
 }) {
-  const [tweets, setTweets] = useState<fullTweet[]>([]);
+  const [tweets, setTweets] = useState<IModTweet[]>([]);
   const [pagesLoaded, setPagesLoaded] = useState(0);
   const [click, setClick] = useState(false);
   const { ref, inView } = useInView();
@@ -27,7 +28,7 @@ export default function Tweets({
   const loadMoreTweets = async () => {
     setIsLoading(true);
     const nextPage = pagesLoaded + 1;
-    const newTweets: Array<fullTweet> | undefined = await getTweets(
+    const newTweets: Array<IModTweet> | null = await getTweets(
       mode,
       data?.user?.userId,
       nextPage,
@@ -35,7 +36,7 @@ export default function Tweets({
     );
     if (newTweets) {
       // console.log(newTweets);
-      setTweets((prevTweets: fullTweet[]) => [...prevTweets, ...newTweets]);
+      setTweets((prevTweets: IModTweet[]) => [...prevTweets, ...newTweets]);
       setPagesLoaded(nextPage);
       if (newTweets.length === 0) {
         setNoMoreTweets(true);
@@ -55,7 +56,7 @@ export default function Tweets({
   return (
     <>
       {tweets?.length ? (
-        tweets.map((tweet: fullTweet) => {
+        tweets.map((tweet: IModTweet) => {
           return (
             <Tweet
               key={tweet._id}

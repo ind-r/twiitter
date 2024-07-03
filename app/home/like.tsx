@@ -1,5 +1,6 @@
 "use client";
-import { likeDislike } from "@/actions/actions";
+import { like } from "@/actions/likeShare";
+import { LikeModes } from "@/types/enums";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useTransition } from "react";
@@ -24,7 +25,9 @@ export default function Like({
         disabled={isPending}
         onClick={() => {
           if (!isPending) {
-            startTransition(() => likeDislike(tweetId, sessionUserId));
+            startTransition(() =>
+              like(LikeModes.tweet, tweetId, sessionUserId),
+            );
             setLikeCount((prev) => (isLikedBy ? prev - 1 : prev + 1));
             setIsLikedBy(!isLikedBy);
           }

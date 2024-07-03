@@ -1,11 +1,11 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import connectMongo from "../../../../libs/MongooseConnect";
-import UserMongo from "../../../../libs/models/userModel";
 import { compare } from "bcryptjs";
 import { Account, Profile, Session, TokenSet, User } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
-import { UserType } from "@/actions/util";
+import connectMongoDB from "@/lib/MongooseConnect";
+import { IUser } from "@/types/models/user";
+import MUser from "@/lib/models/userModel";
 
 export interface SessionType extends Session {
   user: {
@@ -43,13 +43,13 @@ export const options = {
           if (!credentials) {
             return null;
           }
-          const db = await connectMongo();
+          const db = await connectMongoDB();
           if (credentials.email !== " ") {
-            var user: UserType | null = await UserMongo.findOne({
+            var user: IUser | null = await MUser.findOne({
               email: credentials.email,
             });
           } else {
-            var user: UserType | null = await UserMongo.findOne({
+            var user: IUser | null = await MUser.findOne({
               username: credentials.username,
             });
           }
@@ -120,8 +120,8 @@ export const options = {
 
         if (profile) {
           try {
-            const db = await connectMongo(); // Ensure the connection is handled correctly in connectMongo
-            const dbUser: UserType | null = await UserMongo.findOne({
+            const db = await connectMongoDB(); // Ensure the connection is handled correctly in connectMongo
+            const dbUser: IUser | null = await MUser.findOne({
               email: profile.email,
             });
 
@@ -176,14 +176,14 @@ export const options = {
           return false;
         }
         try {
-          const connect = await connectMongo();
+          const connect = await connectMongoDB();
           if (connect) {
-            const user: UserType | null = await UserMongo.findOne({
+            const user: IUser | null = await MUser.findOne({
               // googleId: account.providerAccountId,
               email: profile.email,
             });
             if (!user) {
-              var newUser = new UserMongo({
+              var newUser = new MUser({
                 email: profile.email,
                 nickname: "0",
                 username: "0",

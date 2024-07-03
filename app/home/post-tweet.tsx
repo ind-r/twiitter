@@ -1,11 +1,11 @@
 "use client";
-import { postTweet } from "@/actions/actions";
 import { Session } from "next-auth";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Spinner } from "./spinner";
+import { postTweet } from "@/actions/tweets";
 
 export default function PostTweet({ data }: { data: Session }) {
   const [isDisabled, setDisabled] = useState(false);
@@ -21,7 +21,7 @@ export default function PostTweet({ data }: { data: Session }) {
       let t = tweet.trim;
       if (tweet.trim().length != 0) {
         console.log(tweet);
-        await postTweet(name, tweet);
+        await postTweet(data.user.userId, tweet);
       } else {
         alert("aww hell nah");
       }

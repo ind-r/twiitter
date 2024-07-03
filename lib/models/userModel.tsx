@@ -1,18 +1,13 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  email: String,
-  username: String,
+  email: { type: String, required: true, unique: true },
+  username: { type: String, required: true },
   nickname: String,
   googleId: String,
-  tweets: [String],
-  likes: [String],
-  shares: [String],
-  password: String,
+  password: { type: String, required: true, select: false },
   image: String,
 });
-userSchema.set("timestamps", true);
-
 userSchema.set("timestamps", true);
 
 // mongoose.models = {};
@@ -20,3 +15,8 @@ const User = mongoose.models.User || mongoose.model("User", userSchema);
 // var User = mongoose.model('User', userSchema);
 
 export default User;
+
+// tweets: [String],
+// comments: [String],
+// likes: [String],
+// shares: [String],
