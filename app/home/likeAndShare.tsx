@@ -60,7 +60,7 @@ export default function LikeAndShare({
             className="flex flex-col items-center cursor-pointer"
           >
             <FontAwesomeIcon className="float-left" icon={faRetweet} />
-            <h1>{likes}</h1>
+            <h1>{shares}</h1>
           </Link>
         )}
       </div>

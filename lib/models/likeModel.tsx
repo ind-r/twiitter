@@ -9,6 +9,7 @@ const LikeSchema = new mongoose.Schema({
   },
   commentId: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
 });
+
 LikeSchema.set("timestamps", true);
 
 const Like = mongoose.models.Tweet || mongoose.model("Like", LikeSchema);

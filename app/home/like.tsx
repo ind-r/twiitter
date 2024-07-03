@@ -26,7 +26,7 @@ export default function Like({
         onClick={() => {
           if (!isPending) {
             startTransition(() =>
-              like(LikeModes.tweet, tweetId, sessionUserId),
+              like(LikeModes.tweet, sessionUserId, tweetId),
             );
             setLikeCount((prev) => (isLikedBy ? prev - 1 : prev + 1));
             setIsLikedBy(!isLikedBy);

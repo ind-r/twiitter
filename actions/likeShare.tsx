@@ -4,7 +4,6 @@ import connectMongoDB from "@/lib/MongooseConnect";
 import Tweet from "@/lib/models/tweetModel";
 import User from "@/lib/models/userModel";
 import Like from "@/lib/models/likeModel";
-import { revalidatePath } from "next/cache";
 import Share from "@/lib/models/shareModel";
 import { ILike } from "@/types/models/like";
 import { LikeModes, ShareModes } from "@/types/enums";
@@ -20,7 +19,7 @@ export const getSharesOfTweet = async (
     if (tweetsCount) {
       return tweetsCount;
     }
-    console.log("tweet not found");
+    // console.log("tweet not found");
     return null;
   } catch (err) {
     console.log(err);
@@ -37,7 +36,7 @@ export const getLikesOfTweet = async (
     if (tweetsCount) {
       return tweetsCount;
     }
-    console.log("tweet not found");
+    // console.log("tweet not found");
     return null;
   } catch (err) {
     console.log(err);
@@ -53,11 +52,13 @@ export const like = async (
 ): Promise<void> => {
   try {
     const connect = await connectMongoDB();
+
     const [tweet, user, like] = await Promise.all([
       Tweet.exists({ _id: tweetId }),
       User.exists({ _id: userId }),
       Like.exists({ userId, tweetId, commentId }),
     ]);
+
     if (!tweet || !user) {
       console.log({ status: 404, message: "Tweet or user not found" });
     }
@@ -74,15 +75,14 @@ export const like = async (
     } else {
       // LIKE
       if (tweet && user) {
-        const newLikeData: ILike = await new Like({
+        let newLike: ILike = await new Like({
           userId,
           tweetId,
         });
-        if (likeMode === LikeModes.comment && commentId) {
-          newLikeData.commentId = commentId;
-        }
 
-        const newLike = new Like(newLikeData);
+        if (likeMode === LikeModes.comment && commentId) {
+          newLike.commentId = commentId;
+        }
         await newLike.save();
 
         return;
@@ -135,12 +135,10 @@ export const share = async (
       }
     } else {
       // SHARE
-      const newShareData: IShare = new Share({ userId, tweetId });
+      let newShare: IShare = new Share({ userId, tweetId });
       if (shareMode === ShareModes.comment && commentId) {
-        newShareData.commentId = commentId;
+        newShare.commentId = commentId;
       }
-
-      const newShare = new Share(newShareData);
       await newShare.save();
 
       return;

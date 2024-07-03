@@ -9,6 +9,7 @@ const ShareSchema = new mongoose.Schema({
   },
   commentId: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
 });
+
 ShareSchema.set("timestamps", true);
 
 const Share = mongoose.models.Tweet || mongoose.model("Share", ShareSchema);

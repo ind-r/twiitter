@@ -53,10 +53,9 @@ export const deleteTweet = async (
     const user: IExist | null = await User.exists({ _id: userId });
     const tweet: IExist | null = await Tweet.exists({ _id: tweetId });
     if (user && tweet) {
-      Tweet.deleteOne({ _id: tweetId });
+      await Tweet.deleteOne({ _id: tweetId });
       const res1 = await Like.deleteMany({ tweetId });
       const res2 = await Share.deleteMany({ tweetId });
-      revalidatePath("/home");
       return {
         status: 200,
         likesDeleted: res1.deletedCount,

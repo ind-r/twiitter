@@ -26,7 +26,7 @@ export default function Share({
         onClick={() => {
           if (!isPending) {
             startTransition(() =>
-              share(ShareModes.tweet, tweetId, sessionUserId),
+              share(ShareModes.tweet, sessionUserId, tweetId),
             );
             setShareCount((prev) => (isSharedBy ? prev - 1 : prev + 1));
             setIsSharedBy(!isSharedBy);
