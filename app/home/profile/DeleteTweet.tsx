@@ -5,14 +5,14 @@ import { faRemove } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function DeleteTweet({
-  userId,
+  sessionUserId,
   tweetId,
 }: {
-  userId: string;
+  sessionUserId: string;
   tweetId: string;
 }) {
   const handleClick = async () => {
-    await deleteTweet(userId, tweetId);
+    await deleteTweet(sessionUserId, tweetId);
   };
   return (
     <div className="float-right m-4 p-4">

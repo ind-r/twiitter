@@ -1,6 +1,8 @@
 export enum TweetModes {
-  allTweets,
-  userTweets,
+  all,
+  user,
+  account,
+  full,
 }
 
 export enum LikeModes {

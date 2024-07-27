@@ -4,7 +4,7 @@ import PostTweet from "../post-tweet";
 import ReloadCircle from "../reload-circle";
 import { Suspense } from "react";
 import TweetSkel from "../tweet-skel";
-import Tweets from "../tweets";
+import Tweets from "../tweets-container";
 import { redirect } from "next/navigation";
 import { TweetModes } from "@/types/enums";
 
@@ -26,7 +26,7 @@ export default async function Profile() {
             </>
           }
         >
-          <Tweets data={data} mode={TweetModes.userTweets} />
+          <Tweets data={data} mode={TweetModes.user} />
         </Suspense>
       </>
     );

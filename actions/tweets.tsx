@@ -15,10 +15,11 @@ import {
   isLikedByUser,
   isSharedByUser,
 } from "./likeShare";
+import { IUser } from "@/types/models/user";
 
 export const postTweet = async (
   userId: string,
-  tweet: string,
+  tweet: string
 ): Promise<{ status: number } | undefined> => {
   try {
     const connect = await connectMongoDB();
@@ -42,7 +43,7 @@ export const postTweet = async (
 
 export const deleteTweet = async (
   userId: string,
-  tweetId: string,
+  tweetId: string
 ): Promise<{
   status: number;
   likesDeleted?: number;
@@ -51,8 +52,8 @@ export const deleteTweet = async (
   try {
     const connect = await connectMongoDB();
     const user: IExist | null = await User.exists({ _id: userId });
-    const tweet: IExist | null = await Tweet.exists({ _id: tweetId });
-    if (user && tweet) {
+    const tweet: ITweet | null = await Tweet.findById(tweetId);
+    if (user && tweet && tweet.userId === user._id) {
       await Tweet.deleteOne({ _id: tweetId });
       const res1 = await Like.deleteMany({ tweetId });
       const res2 = await Share.deleteMany({ tweetId });
@@ -73,45 +74,53 @@ export const deleteTweet = async (
 
 export const getTweets = async (
   mode: TweetModes,
-  userId: string | undefined,
   page: number,
   pageSize: number,
+  sessionUserId: string | undefined,
+  userId?: string | undefined
 ): Promise<Array<IModTweet> | null> => {
   try {
     const connect = await connectMongoDB();
     let tweets: any | null = null;
-    if (mode === TweetModes.allTweets) {
+
+    const commonPipeline = [
+      {
+        $sort: { createdAt: (-1 as 1) || -1 }, // Sort by createdAt in descending order
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "totalCount" }],
+          data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
+        },
+      },
+    ];
+
+    if (mode === TweetModes.all) {
+      tweets = await Tweet.aggregate(commonPipeline);
+    } else if (mode === TweetModes.user && sessionUserId) {
       tweets = await Tweet.aggregate([
-        {
-          $sort: { createdAt: -1 }, // Sort by createdAt in descending order
-        },
-        {
-          $facet: {
-            metadata: [{ $count: "totalCount" }],
-            data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
-          },
-        },
+        { $match: { userId: sessionUserId } },
+        ...commonPipeline,
       ]);
-    } else if (TweetModes.userTweets && userId) {
+    } else if (mode === TweetModes.account && userId) {
       tweets = await Tweet.aggregate([
-        {
-          $sort: { createdAt: -1 }, // Sort by createdAt in descending order
-        },
-        {
-          $match: { userId: userId },
-        },
-        {
-          $facet: {
-            metadata: [{ $count: "totalCount" }],
-            data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
-          },
-        },
+        { $match: { userId: userId } },
+        ...commonPipeline,
       ]);
     }
-    if (tweets) {
-      const tweetsToSend = await Promise.all(
-        tweets[0].data.map(async (tweet: ITweet) => {
-          const user = await User.findById(tweet.userId);
+
+    if (tweets && tweets.length > 0) {
+      const tweetData = tweets[0].data;
+
+      const users = await Promise.all(
+        tweetData.map(
+          async (tweet: ITweet) => await User.findById(tweet.userId)
+        )
+      );
+
+      const tweetPromises = tweetData.map(
+        async (tweet: ITweet, index: number) => {
+          const user = users[index];
           if (user) {
             let t: IModTweet = {
               _id: tweet._id.toString(),
@@ -124,21 +133,57 @@ export const getTweets = async (
               likedBy: false,
               sharedBy: false,
             };
-            if (userId) {
-              if (await isLikedByUser(userId, tweet._id)) {
-                t.likedBy = true;
-              }
-              if (await isSharedByUser(userId, tweet._id)) {
-                t.sharedBy = true;
-              }
+            if (sessionUserId) {
+              [t.likedBy, t.sharedBy] = await Promise.all([
+                await isLikedByUser(sessionUserId, tweet._id),
+                await isSharedByUser(sessionUserId, tweet._id),
+              ]);
             }
             return t;
           }
           return {};
-        }),
+        }
       );
-      // console.log(tweetsToSend);
+
+      const tweetsToSend = await Promise.all(tweetPromises);
+
       return tweetsToSend;
+    }
+    return null;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+};
+
+export const getTweet = async (
+  tweetId: string,
+  username: string,
+  sessionUserId?: string | undefined
+): Promise<IModTweet | null> => {
+  try {
+    const connect = await connectMongoDB();
+    const tweet: ITweet | null = await Tweet.findById(tweetId);
+    const user: IUser | null = await User.findOne({ username: username });
+    if (user && tweet) {
+      let t: IModTweet = {
+        _id: tweet._id.toString(),
+        tweetContent: tweet.tweetContent,
+        likes: (await getLikesOfTweet(tweet._id)) || 0,
+        shares: (await getSharesOfTweet(tweet._id)) || 0,
+        username: user.username,
+        nickname: user.nickname,
+        image: user.image,
+        likedBy: false,
+        sharedBy: false,
+      };
+      if (sessionUserId) {
+        [t.likedBy, t.sharedBy] = await Promise.all([
+          await isLikedByUser(sessionUserId, tweet._id),
+          await isSharedByUser(sessionUserId, tweet._id),
+        ]);
+      }
+      return t;
     }
     return null;
   } catch (err) {

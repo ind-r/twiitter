@@ -1,8 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import Tweet from "./tweet";
+import Tweet from "./tweet-container";
 import { SessionType } from "../api/auth/[...nextauth]/options";
 import { Spinner } from "./spinner";
 import TweetSkel from "./tweet-skel";
@@ -12,9 +11,11 @@ import { getTweets } from "@/actions/tweets";
 // import Profile from "./profile/page";
 
 export default function Tweets({
+  userId,
   data,
   mode,
 }: {
+  userId?: string | undefined;
   data: SessionType | null;
   mode: TweetModes;
 }) {
@@ -25,17 +26,18 @@ export default function Tweets({
   const [noMoreTweets, setNoMoreTweets] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadMoreTweets = async () => {
+  const loadMoreTweets = async (username?: string | undefined) => {
     setIsLoading(true);
     const nextPage = pagesLoaded + 1;
     const newTweets: Array<IModTweet> | null = await getTweets(
       mode,
-      data?.user?.userId,
       nextPage,
-      14,
+      8,
+      data?.user?.userId,
+      username,
     );
     if (newTweets) {
-      // console.log(newTweets);
+      console.log(newTweets);
       setTweets((prevTweets: IModTweet[]) => [...prevTweets, ...newTweets]);
       setPagesLoaded(nextPage);
       if (newTweets.length === 0) {
@@ -48,9 +50,15 @@ export default function Tweets({
   };
 
   useEffect(() => {
-    if (inView && !isLoading) {
+    if (inView && !isLoading && !noMoreTweets) {
       // console.log("scrolled to the end");
-      loadMoreTweets();
+      if (mode === TweetModes.all) {
+        loadMoreTweets();
+      } else if (mode === TweetModes.user) {
+        loadMoreTweets(data?.user?.userId);
+      } else if (mode === TweetModes.account) {
+        loadMoreTweets(userId);
+      }
     }
   }, [inView, click]);
   return (
@@ -69,7 +77,7 @@ export default function Tweets({
               shares={tweet.shares}
               likedBy={tweet.likedBy}
               sharedBy={tweet.sharedBy}
-              data={data}
+              sessionUserId={data?.user?.userId}
               mode={mode}
             />
           );

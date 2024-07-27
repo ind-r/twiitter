@@ -1,5 +1,5 @@
 import Dashboard from "./dashboard";
-import RightMenu from "./rightMenu";
+import RightMenu from "./right-menu";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

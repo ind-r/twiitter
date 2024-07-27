@@ -1,7 +1,7 @@
 "use client";
 import { TweetModes } from "@/types/enums";
 import { SessionType } from "../api/auth/[...nextauth]/options";
-import LikeAndShare from "./likeAndShare";
+import LikeAndShareComment from "./like-share-comment";
 import DeleteTweet from "./profile/DeleteTweet";
 
 export default function Tweet({
@@ -12,7 +12,7 @@ export default function Tweet({
   image,
   likes,
   shares,
-  data,
+  sessionUserId,
   likedBy,
   sharedBy,
   mode,
@@ -26,13 +26,9 @@ export default function Tweet({
   shares: number;
   likedBy: boolean;
   sharedBy: boolean;
-  data: SessionType | null;
+  sessionUserId: string | undefined;
   mode: TweetModes;
 }) {
-  let sessionUserId: string | null = null;
-  if (data && data.user && data.user.userId) {
-    sessionUserId = data.user.userId;
-  }
   return (
     <article className="pt-2 text-white border-b border-borderGray">
       <div className="h-[40px] w-[40px] float-left mt-2 ml-4 rounded-full overflow-hidden ">
@@ -42,21 +38,23 @@ export default function Tweet({
         <h1 className="inline font-semibold">{nickname} </h1>
         <h1 className="inline text-gray-600 text-sm">@{username}</h1>
       </div>
-      {mode === TweetModes.userTweets && data ? (
-        <DeleteTweet tweetId={tweetId} userId={data?.user.userId} />
+      {mode === TweetModes.user && sessionUserId ? (
+        <DeleteTweet tweetId={tweetId} sessionUserId={sessionUserId} />
       ) : (
         <></>
       )}
       <div className="mr-6 pb-1 ml-16">
         <h1>{tweetContent}</h1>
       </div>
-      <LikeAndShare
+      <LikeAndShareComment
+        username={username}
         tweetId={tweetId}
         sessionUserId={sessionUserId}
         likes={likes}
         shares={shares}
         likedBy={likedBy}
         sharedBy={sharedBy}
+        mode={mode}
       />
     </article>
   );
