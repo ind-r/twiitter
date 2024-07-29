@@ -7,11 +7,10 @@ const ShareSchema = new mongoose.Schema({
     ref: "Tweet",
     required: true,
   },
-  commentId: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
 });
 
 ShareSchema.set("timestamps", true);
 
-const Share = mongoose.models.Tweet || mongoose.model("Share", ShareSchema);
+const Share = mongoose.models.Share || mongoose.model("Share", ShareSchema);
 
 export default Share;

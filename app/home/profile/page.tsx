@@ -6,14 +6,14 @@ import { Suspense } from "react";
 import TweetSkel from "../tweet-skel";
 import Tweets from "../tweets-container";
 import { redirect } from "next/navigation";
-import { TweetModes } from "@/types/enums";
+import { TweetModes, TweetType } from "@/types/enums";
 
 export default async function Profile() {
   const data: SessionType | null = await getServerSession(options);
   if (data) {
     return (
       <>
-        {data && <PostTweet data={data} />}
+        {data && <PostTweet data={data} tweetType={TweetType.tweet} />}
         <ReloadCircle />
         <Suspense
           fallback={

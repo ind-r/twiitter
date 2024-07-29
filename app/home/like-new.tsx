@@ -1,6 +1,5 @@
 "use client";
 import { like } from "@/actions/likeShare";
-import { LikeModes } from "@/types/enums";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { experimental_useOptimistic as useOptimistic } from "react";
@@ -22,7 +21,7 @@ export default function Like({
       ...state,
       likes: newLikeCount,
       sending: true,
-    }),
+    })
   );
   let color = " ";
   if (likedBy) {
@@ -33,7 +32,7 @@ export default function Like({
       <button
         onClick={async () => {
           addOptimisticLike(optimisticLikes.likes + 1);
-          await like(LikeModes.tweet, sessionUserId, tweetId);
+          await like(sessionUserId, tweetId);
         }}
       >
         <FontAwesomeIcon color={color} className="float-left" icon={faHeart} />

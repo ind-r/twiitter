@@ -6,12 +6,11 @@ import User from "@/lib/models/userModel";
 import Like from "@/lib/models/likeModel";
 import Share from "@/lib/models/shareModel";
 import { ILike } from "@/types/models/like";
-import { LikeModes, ShareModes } from "@/types/enums";
 import { IShare } from "@/types/models/share";
 import { IExist } from "@/types/utils";
 
 export const getSharesOfTweet = async (
-  tweetId: string,
+  tweetId: string
 ): Promise<number | null> => {
   try {
     const connect = await connectMongoDB();
@@ -28,7 +27,7 @@ export const getSharesOfTweet = async (
 };
 
 export const getLikesOfTweet = async (
-  tweetId: string,
+  tweetId: string
 ): Promise<number | null> => {
   try {
     const connect = await connectMongoDB();
@@ -45,10 +44,9 @@ export const getLikesOfTweet = async (
 };
 
 export const like = async (
-  likeMode: LikeModes,
   userId: string,
   tweetId: string,
-  commentId?: string,
+  commentId?: string
 ): Promise<void> => {
   try {
     const connect = await connectMongoDB();
@@ -79,10 +77,6 @@ export const like = async (
           userId,
           tweetId,
         });
-
-        if (likeMode === LikeModes.comment && commentId) {
-          newLike.commentId = commentId;
-        }
         await newLike.save();
 
         return;
@@ -105,10 +99,9 @@ export const like = async (
 };
 
 export const share = async (
-  shareMode: ShareModes,
   userId: string,
   tweetId: string,
-  commentId?: string,
+  commentId?: string
 ): Promise<void> => {
   try {
     const connect = await connectMongoDB();
@@ -136,9 +129,6 @@ export const share = async (
     } else {
       // SHARE
       let newShare: IShare = new Share({ userId, tweetId });
-      if (shareMode === ShareModes.comment && commentId) {
-        newShare.commentId = commentId;
-      }
       await newShare.save();
 
       return;

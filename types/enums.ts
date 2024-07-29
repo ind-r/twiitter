@@ -3,13 +3,10 @@ export enum TweetModes {
   user,
   account,
   full,
+  subTweet,
 }
 
-export enum LikeModes {
+export enum TweetType {
   tweet,
-  comment,
-}
-export enum ShareModes {
-  tweet,
-  comment,
+  subTweet,
 }

@@ -1,10 +1,13 @@
 import { getTweet } from "@/actions/tweets";
 import { options, SessionType } from "@/app/api/auth/[...nextauth]/options";
+import PostTweet from "@/app/home/post-tweet";
 import Tweet from "@/app/home/tweet-container";
-import { TweetModes } from "@/types/enums";
+import Tweets from "@/app/home/tweets-container";
+import { TweetModes, TweetType } from "@/types/enums";
 import { IModTweet } from "@/types/models/tweet";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/dist/server/api-utils";
+import { notFound } from "next/navigation";
 
 export default async function FullTweet({
   params: { username, tweetId },
@@ -34,12 +37,15 @@ export default async function FullTweet({
           sessionUserId={data?.user?.userId}
           mode={TweetModes.full}
         />
-        <h1 className="text-center">COMING SOON</h1>
+        <PostTweet
+          data={data}
+          tweetType={TweetType.subTweet}
+          tweetRefId={tweetId}
+        />
+        <Tweets data={data} mode={TweetModes.subTweet} tweetRefId={tweetId} />
       </>
     );
   } else {
-    return {
-      notFound: true,
-    };
+    notFound();
   }
 }

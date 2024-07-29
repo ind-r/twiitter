@@ -74,7 +74,7 @@ export default function LikeAndShareComment({
         <div className="flex flex-col items-center">
           {sessionUserId ? (
             <>
-              <a href={`home/${username}/tweet/${tweetId}`}>
+              <a href={`/home/${username}/tweet/${tweetId}`}>
                 <FontAwesomeIcon
                   color="gray-500"
                   className="float-left"

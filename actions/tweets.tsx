@@ -5,7 +5,7 @@ import Like from "@/lib/models/likeModel";
 import Share from "@/lib/models/shareModel";
 import Tweet from "@/lib/models/tweetModel";
 import User from "@/lib/models/userModel";
-import { TweetModes } from "@/types/enums";
+import { TweetModes, TweetType } from "@/types/enums";
 import { IModTweet, ITweet } from "@/types/models/tweet";
 import { IExist } from "@/types/utils";
 import { revalidatePath } from "next/cache";
@@ -16,16 +16,21 @@ import {
   isSharedByUser,
 } from "./likeShare";
 import { IUser } from "@/types/models/user";
+import mongoose from "mongoose";
 
 export const postTweet = async (
   userId: string,
-  tweet: string
+  tweet: string,
+  tweetType: TweetType,
+  tweetRefId: string | null
 ): Promise<{ status: number } | undefined> => {
   try {
     const connect = await connectMongoDB();
     let newTweet: ITweet = await new Tweet({
       tweetContent: tweet,
       userId,
+      tweetType,
+      tweetRefId,
     });
     let result = await newTweet.save();
     if (result) {
@@ -77,7 +82,7 @@ export const getTweets = async (
   page: number,
   pageSize: number,
   sessionUserId: string | undefined,
-  userId?: string | undefined
+  idToUse?: string | undefined
 ): Promise<Array<IModTweet> | null> => {
   try {
     const connect = await connectMongoDB();
@@ -95,16 +100,26 @@ export const getTweets = async (
       },
     ];
 
+    const objectId = new mongoose.Types.ObjectId(idToUse);
+    const sessionUserObjectId = new mongoose.Types.ObjectId(sessionUserId);
     if (mode === TweetModes.all) {
-      tweets = await Tweet.aggregate(commonPipeline);
-    } else if (mode === TweetModes.user && sessionUserId) {
       tweets = await Tweet.aggregate([
-        { $match: { userId: sessionUserId } },
+        { $match: { tweetType: TweetType.tweet } },
         ...commonPipeline,
       ]);
-    } else if (mode === TweetModes.account && userId) {
+    } else if (mode === TweetModes.user && sessionUserId) {
       tweets = await Tweet.aggregate([
-        { $match: { userId: userId } },
+        { $match: { userId: sessionUserObjectId } },
+        ...commonPipeline,
+      ]);
+    } else if (mode === TweetModes.account) {
+      tweets = await Tweet.aggregate([
+        { $match: { userId: objectId } },
+        ...commonPipeline,
+      ]);
+    } else if (mode === TweetModes.subTweet) {
+      tweets = await Tweet.aggregate([
+        { $match: { tweetRefId: objectId, tweetType: TweetType.subTweet } },
         ...commonPipeline,
       ]);
     }
@@ -132,6 +147,7 @@ export const getTweets = async (
               image: user.image,
               likedBy: false,
               sharedBy: false,
+              tweetType: tweet.tweetType,
             };
             if (sessionUserId) {
               [t.likedBy, t.sharedBy] = await Promise.all([
@@ -176,6 +192,7 @@ export const getTweet = async (
         image: user.image,
         likedBy: false,
         sharedBy: false,
+        tweetType: tweet.tweetType,
       };
       if (sessionUserId) {
         [t.likedBy, t.sharedBy] = await Promise.all([

@@ -6,12 +6,27 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Spinner } from "./spinner";
 import { postTweet } from "@/actions/tweets";
+import { TweetType } from "@/types/enums";
 
-export default function PostTweet({ data }: { data: Session }) {
+export default function PostTweet({
+  data,
+  tweetType,
+  tweetRefId,
+}: {
+  data: Session | null;
+  tweetType: TweetType;
+  tweetRefId?: string;
+}) {
   const [isDisabled, setDisabled] = useState(false);
   const [tweet, setTweet] = useState<string>("");
+  let placeholderText = "";
+  if (tweetType === TweetType.tweet) {
+    placeholderText = "Whats Happening!";
+  } else {
+    placeholderText = "Comment Away!";
+  }
 
-  if (data.user.image && data.user.name) {
+  if (data?.user.image && data.user.name) {
     const image: string = data.user.image;
     let httpsImage: boolean = image.includes("http") && image.includes("://");
     const name = data.user.name;
@@ -21,7 +36,11 @@ export default function PostTweet({ data }: { data: Session }) {
       let t = tweet.trim;
       if (tweet.trim().length != 0) {
         console.log(tweet);
-        await postTweet(data.user.userId, tweet);
+        if (tweetType === TweetType.subTweet && tweetRefId) {
+          await postTweet(data.user.userId, tweet, tweetType, tweetRefId);
+        } else {
+          await postTweet(data.user.userId, tweet, tweetType, null);
+        }
       } else {
         alert("aww hell nah");
       }
@@ -63,7 +82,7 @@ export default function PostTweet({ data }: { data: Session }) {
         <form className="ml-20 mr-3">
           <Input
             className="border-none"
-            placeholder="Whats happening!"
+            placeholder={placeholderText}
             onChange={handleInputChange}
             name="tweet"
           />

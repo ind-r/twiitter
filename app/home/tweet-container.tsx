@@ -1,7 +1,7 @@
 "use client";
 import { TweetModes } from "@/types/enums";
 import { SessionType } from "../api/auth/[...nextauth]/options";
-import LikeAndShareComment from "./like-share-comment";
+import LikeAndShare from "./like-share-comment";
 import DeleteTweet from "./profile/DeleteTweet";
 
 export default function Tweet({
@@ -46,7 +46,7 @@ export default function Tweet({
       <div className="mr-6 pb-1 ml-16">
         <h1>{tweetContent}</h1>
       </div>
-      <LikeAndShareComment
+      <LikeAndShare
         username={username}
         tweetId={tweetId}
         sessionUserId={sessionUserId}

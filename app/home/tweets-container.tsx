@@ -8,16 +8,17 @@ import TweetSkel from "./tweet-skel";
 import { TweetModes } from "@/types/enums";
 import { IModTweet } from "@/types/models/tweet";
 import { getTweets } from "@/actions/tweets";
-// import Profile from "./profile/page";
 
 export default function Tweets({
   userId,
   data,
   mode,
+  tweetRefId,
 }: {
   userId?: string | undefined;
   data: SessionType | null;
   mode: TweetModes;
+  tweetRefId?: string;
 }) {
   const [tweets, setTweets] = useState<IModTweet[]>([]);
   const [pagesLoaded, setPagesLoaded] = useState(0);
@@ -26,7 +27,7 @@ export default function Tweets({
   const [noMoreTweets, setNoMoreTweets] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadMoreTweets = async (username?: string | undefined) => {
+  const loadMoreTweets = async (idToUse?: string) => {
     setIsLoading(true);
     const nextPage = pagesLoaded + 1;
     const newTweets: Array<IModTweet> | null = await getTweets(
@@ -34,7 +35,7 @@ export default function Tweets({
       nextPage,
       8,
       data?.user?.userId,
-      username,
+      idToUse
     );
     if (newTweets) {
       console.log(newTweets);
@@ -58,6 +59,8 @@ export default function Tweets({
         loadMoreTweets(data?.user?.userId);
       } else if (mode === TweetModes.account) {
         loadMoreTweets(userId);
+      } else if (mode === TweetModes.subTweet && tweetRefId) {
+        loadMoreTweets(tweetRefId);
       }
     }
   }, [inView, click]);
