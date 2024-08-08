@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   nickname: String,
   googleId: String,
-  password: { type: String, required: true, select: false },
+  password: { type: String, select: false },
   image: String,
 });
 userSchema.set("timestamps", true);
