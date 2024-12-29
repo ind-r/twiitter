@@ -39,6 +39,7 @@ export const options = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials: Record<string, string> | undefined) => {
+        console.log("credentials", credentials);
         try {
           if (!credentials) {
             return null;
@@ -60,7 +61,7 @@ export const options = {
 
           const checkPassword = await compare(
             credentials.password,
-            user.password,
+            user.password
           );
 
           if (!checkPassword) {
@@ -101,6 +102,7 @@ export const options = {
       trigger?: "update" | "signIn" | "signUp" | undefined;
       session?: any;
     }) {
+      console.log("trigger", trigger);
       if (trigger === "update") {
         if (session.name) {
           token.name = session.name;
@@ -147,6 +149,7 @@ export const options = {
       return token; // Return the modified token
     },
     async session({ session, token }: { session: any; token: TokenSet }) {
+      console.log("session", session);
       // this token return above jwt()
       session.accessToken = token.accessToken;
       session.user.userId = token.userId;
@@ -157,7 +160,6 @@ export const options = {
     },
 
     async redirect() {
-      const apiUrl = process.env.NEXTAUTH_URL as string;
       return `/home`;
     },
 
@@ -168,6 +170,7 @@ export const options = {
       account: Account | null;
       profile?: CustomProfile | undefined; // Make profile optional if required by the library
     }) {
+      console.log("signin", account);
       if (!account) {
         return false;
       }
