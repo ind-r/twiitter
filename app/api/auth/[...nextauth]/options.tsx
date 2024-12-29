@@ -39,7 +39,6 @@ export const options = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials: Record<string, string> | undefined) => {
-        console.log("credentials", credentials);
         try {
           if (!credentials) {
             return null;
@@ -102,7 +101,6 @@ export const options = {
       trigger?: "update" | "signIn" | "signUp" | undefined;
       session?: any;
     }) {
-      console.log("trigger", trigger);
       if (trigger === "update") {
         if (session.name) {
           token.name = session.name;
@@ -149,7 +147,6 @@ export const options = {
       return token; // Return the modified token
     },
     async session({ session, token }: { session: any; token: TokenSet }) {
-      console.log("session", session);
       // this token return above jwt()
       session.accessToken = token.accessToken;
       session.user.userId = token.userId;
@@ -160,6 +157,7 @@ export const options = {
     },
 
     async redirect() {
+      const apiUrl = process.env.NEXTAUTH_URL as string;
       return `/home`;
     },
 
@@ -169,39 +167,47 @@ export const options = {
     }: {
       account: Account | null;
       profile?: CustomProfile | undefined; // Make profile optional if required by the library
-    }) {
-      console.log("signin", account);
+    }): Promise<boolean> {
+      console.log("CHECKPOINT 1");
       if (!account) {
         return false;
       }
       if (account.provider === "google") {
+        console.log("CHECKPOINT 2", profile);
         if (!profile) {
           return false;
         }
         try {
           const connect = await connectMongoDB();
-          if (connect) {
-            const user: IUser | null = await MUser.findOne({
-              // googleId: account.providerAccountId,
-              email: profile.email,
-            });
-            if (!user) {
-              var newUser = new MUser({
-                email: profile.email,
-                nickname: "0",
-                username: "0",
-                googleId: account.providerAccountId,
-                image: profile.picture,
-              });
 
-              await newUser.save(); // Ensure `save` operation is awaited
-            } else if (!user.googleId) {
-              user.googleId = account.providerAccountId;
-              user.save();
-            }
-            return true;
+          if (!connect) {
+            return false; // Ensure a boolean is returned if `connect` is falsy
           }
-          return false; // Ensure a boolean is returned if `connect` is falsy
+
+          const user: IUser | null = await MUser.findOne({
+            // googleId: account.providerAccountId,
+            email: profile.email,
+          });
+
+          console.log("CHECKPOINT 3", user);
+
+          if (!user) {
+            var newUser = new MUser({
+              email: profile.email,
+              nickname: "0",
+              username: "0",
+              googleId: account.providerAccountId,
+              image: profile.picture,
+            });
+
+            await newUser.save(); // Ensure `save` operation is awaited
+            console.log("CHECKPOINT 4", newUser);
+          } else if (!user.googleId) {
+            user.googleId = account.providerAccountId;
+            user.save();
+          }
+          console.log("CHECKPOINT 5");
+          return true;
         } catch (error) {
           console.log(error);
           return false; // Ensure a boolean is returned in the catch block
