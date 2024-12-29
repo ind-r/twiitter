@@ -158,7 +158,7 @@ export const options = {
 
     async redirect() {
       const apiUrl = process.env.NEXTAUTH_URL as string;
-      return `${apiUrl}/home`;
+      return `/home`;
     },
 
     async signIn({
@@ -209,6 +209,7 @@ export const options = {
       return false; // Ensure a boolean is returned if no condition is met
     },
   },
+  callbackUrl: `${process.env.NEXTAUTH_URL}/api/auth/callback`,
 
   pages: {
     signIn: "/auth/signin",

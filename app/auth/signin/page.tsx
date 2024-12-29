@@ -13,20 +13,18 @@ export default function Signin() {
   }) {
     if (email.includes("@")) {
       const status = await signIn("credentials", {
-        redirect: true,
         email,
         username: " ",
         password,
-        callbackUrl: "/",
+        callbackUrl: "/home",
       });
       console.log(status);
     } else {
       const status = await signIn("credentials", {
-        redirect: true,
         email: " ",
         username: email,
         password,
-        callbackUrl: "/",
+        callbackUrl: "/home",
       });
       console.log(status);
     }
