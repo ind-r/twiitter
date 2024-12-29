@@ -168,28 +168,28 @@ export const options = {
       account: Account | null;
       profile?: CustomProfile | undefined; // Make profile optional if required by the library
     }): Promise<boolean> {
-      console.log("CHECKPOINT 1");
       if (!account) {
         return false;
       }
       if (account.provider === "google") {
-        console.log("CHECKPOINT 2", profile);
         if (!profile) {
           return false;
         }
         try {
+          console.log("CHECKPOINT 1");
           const connect = await connectMongoDB();
 
           if (!connect) {
+            console.log("CHECKPOINT 2");
             return false; // Ensure a boolean is returned if `connect` is falsy
           }
+          console.log("CHECKPOINT 3");
 
           const user: IUser | null = await MUser.findOne({
             // googleId: account.providerAccountId,
             email: profile.email,
           });
-
-          console.log("CHECKPOINT 3", user);
+          console.log("CHECKPOINT 4");
 
           if (!user) {
             var newUser = new MUser({
@@ -201,12 +201,10 @@ export const options = {
             });
 
             await newUser.save(); // Ensure `save` operation is awaited
-            console.log("CHECKPOINT 4", newUser);
           } else if (!user.googleId) {
             user.googleId = account.providerAccountId;
             user.save();
           }
-          console.log("CHECKPOINT 5");
           return true;
         } catch (error) {
           console.log(error);
