@@ -176,20 +176,16 @@ export const options = {
           return false;
         }
         try {
-          console.log("CHECKPOINT 1");
           const connect = await connectMongoDB();
 
           if (!connect) {
-            console.log("CHECKPOINT 2");
             return false; // Ensure a boolean is returned if `connect` is falsy
           }
-          console.log("CHECKPOINT 3");
 
           const user: IUser | null = await MUser.findOne({
             // googleId: account.providerAccountId,
             email: profile.email,
           });
-          console.log("CHECKPOINT 4");
 
           if (!user) {
             var newUser = new MUser({
