@@ -1,7 +1,6 @@
 "use client";
 import { Session } from "next-auth";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Spinner } from "./spinner";
@@ -45,7 +44,9 @@ export default function PostTweet({
       setDisabled(false);
     };
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (
+      event: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
       // Prevent newlines from being entered
       if (
         event.target.value.includes("\n") ||
@@ -78,8 +79,9 @@ export default function PostTweet({
           />
         )}
         <form className="ml-20 mr-3">
-          <Input
-            className="border-none"
+          <textarea
+            className="border-none bg-zinc-950 rounded-xl p-2 w-full"
+            rows={2}
             placeholder={placeholderText}
             onChange={handleInputChange}
             name="tweet"

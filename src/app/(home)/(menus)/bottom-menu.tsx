@@ -1,12 +1,13 @@
 "use client";
+
+import { K } from "@/lib/K";
+import Link from "next/link";
+
 export default function BottomMenu() {
-  const handleClick = () => {
-    console.log("clicked");
-  };
   return (
     <div className="sm:hidden bottom-0 absolute bg-white dark:bg-zinc-950 w-full">
       <div className="flex justify-around items-center border-y dark:border-zinc-800">
-        <button className="py-4 dark:invert" onClick={() => handleClick()}>
+        <Link href={K.Links.home} className="py-4 dark:invert">
           <svg
             className="w-5 h-5"
             viewBox="0 0 16 16"
@@ -27,8 +28,8 @@ export default function BottomMenu() {
               ></path>{" "}
             </g>
           </svg>
-        </button>
-        <button className="py-4 dark:invert" onClick={() => handleClick()}>
+        </Link>
+        {/* <Link href={K.Links.search} className="py-4 dark:invert">
           <svg
             viewBox="0 0 24 24"
             className="w-5 h-5"
@@ -52,7 +53,7 @@ export default function BottomMenu() {
               ></path>{" "}
             </g>
           </svg>
-        </button>
+        </Link> */}
       </div>
     </div>
   );

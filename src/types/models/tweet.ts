@@ -1,7 +1,8 @@
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 import { TweetType } from "../enums";
 
 export interface ITweet extends Document {
+  _id: ObjectId;
   userId: string;
   tweetContent: string;
   tweetType: TweetType;
@@ -17,6 +18,7 @@ export interface ISTweet {
 
 export interface IModTweet {
   _id: string;
+  userId: string;
   tweetContent: string;
   likes: number;
   shares: number;

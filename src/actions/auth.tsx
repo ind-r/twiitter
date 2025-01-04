@@ -54,7 +54,7 @@ export const registerUser = async (user: {
         image: "default-user.png",
         password: await hash(user.password, 12),
       });
-      console.log(newUser);
+      // console.log(newUser);
       newUser.save();
     }
   } catch (error) {
@@ -64,7 +64,7 @@ export const registerUser = async (user: {
 
 export const completeRegistration = async (
   userO: { username: string; nickname: string },
-  userId: string,
+  userId: string
 ) => {
   try {
     const connect = await connectMongoDB();

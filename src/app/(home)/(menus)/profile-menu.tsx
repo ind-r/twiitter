@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import SideMenu from "./side-menu";
+import Image from "next/image";
 
 export default function ProfileMenu({
   image,
@@ -30,8 +31,10 @@ export default function ProfileMenu({
 
   return (
     <div className="flex items-center justify-center" ref={userRef}>
-      <img
+      <Image
         src={httpsImage ? image : "/default-user.png"}
+        height={200}
+        width={200}
         alt="profile"
         className="w-10 h-10 rounded-full cursor-pointer"
         onClick={() => setOpen(!open)}

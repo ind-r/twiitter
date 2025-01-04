@@ -1,4 +1,3 @@
-import { TweetType } from "@/types/enums";
 import mongoose from "mongoose";
 
 const tweetSchema = new mongoose.Schema({
@@ -13,6 +12,3 @@ tweetSchema.set("timestamps", true);
 const Tweet = mongoose.models.Tweet || mongoose.model("Tweet", tweetSchema);
 
 export default Tweet;
-// comments: [String],
-// likes: [String],
-// shares: [String],

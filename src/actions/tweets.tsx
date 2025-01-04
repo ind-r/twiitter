@@ -16,7 +16,7 @@ import {
   isSharedByUser,
 } from "./likeShare";
 import { IUser } from "@/types/models/user";
-import mongoose from "mongoose";
+import { ObjectId } from "mongoose";
 
 export const postTweet = async (
   userId: string,
@@ -26,13 +26,17 @@ export const postTweet = async (
 ): Promise<{ status: number } | undefined> => {
   try {
     const connect = await connectMongoDB();
-    let newTweet: ITweet = await new Tweet({
+    if (!connect) {
+      console.log("Db not connected");
+      return { status: 500 };
+    }
+    const newTweet: ITweet = await new Tweet({
       tweetContent: tweet,
       userId,
       tweetType,
       tweetRefId,
     });
-    let result = await newTweet.save();
+    const result = await newTweet.save();
     if (result) {
       revalidatePath("/");
       return { status: 200 };
@@ -56,116 +60,147 @@ export const deleteTweet = async (
 }> => {
   try {
     const connect = await connectMongoDB();
+    if (!connect) {
+      console.log("Db not connected");
+      return { status: 500 };
+    }
     const user: IExist | null = await User.exists({ _id: userId });
     const tweet: ITweet | null = await Tweet.findById(tweetId);
-    if (user && tweet && tweet.userId === user._id) {
-      await Tweet.deleteOne({ _id: tweetId });
-      const res1 = await Like.deleteMany({ tweetId });
-      const res2 = await Share.deleteMany({ tweetId });
-      return {
-        status: 200,
-        likesDeleted: res1.deletedCount,
-        sharesDeleted: res2.deletedCount,
-      };
-    } else {
+    if (!user || !tweet) {
+      console.log("err: user or tweet not found");
+      return { status: 500 };
+    }
+    if (tweet.userId.toString() !== user._id.toString()) {
       console.log("err: tweet not found");
       return { status: 500 };
     }
+    await Tweet.deleteOne({ _id: tweetId });
+    const res1 = await Like.deleteMany({ tweetId });
+    const res2 = await Share.deleteMany({ tweetId });
+    return {
+      status: 200,
+      likesDeleted: res1.deletedCount,
+      sharesDeleted: res2.deletedCount,
+    };
   } catch (err) {
     console.error(err);
     return { status: 500 };
   }
 };
 
+export interface ITweetProps {
+  mode: TweetModes;
+  page: number;
+  pageSize: number;
+  sessionUserId: string | undefined;
+  usernameToUse?: string | undefined;
+  tweetRefId?: string | undefined;
+}
+
 export const getTweets = async (
-  mode: TweetModes,
-  page: number,
-  pageSize: number,
-  sessionUserId: string | undefined,
-  idToUse?: string | undefined
+  props: ITweetProps
 ): Promise<Array<IModTweet> | null> => {
   try {
-    const connect = await connectMongoDB();
-    let tweets: any | null = null;
+    const { mode, page, pageSize, sessionUserId, usernameToUse, tweetRefId } =
+      props;
 
-    const commonPipeline = [
-      {
-        $sort: { createdAt: (-1 as 1) || -1 }, // Sort by createdAt in descending order
-      },
+    const connect = await connectMongoDB();
+
+    if (!connect) {
+      console.log("Db not connected");
+      return null;
+    }
+
+    let matchCondition: {
+      tweetType?: TweetType;
+      userId?: ObjectId;
+      tweetRefId?: ObjectId;
+    } = {};
+
+    switch (mode) {
+      case TweetModes.all:
+        matchCondition = { tweetType: TweetType.tweet };
+        break;
+      case TweetModes.account:
+        if (usernameToUse) {
+          const user: IUser | null = await User.findOne({
+            username: usernameToUse,
+          });
+          if (!user) {
+            return null;
+          }
+          matchCondition = { userId: user._id };
+        }
+        break;
+      case TweetModes.subTweet:
+        if (tweetRefId) {
+          const tweet: ITweet | null = await Tweet.findById(tweetRefId);
+          if (!tweet) {
+            return null;
+          }
+          matchCondition = {
+            tweetRefId: tweet._id,
+            tweetType: TweetType.subTweet,
+          };
+        }
+        break;
+      default:
+        return null;
+    }
+
+    const tweets = await Tweet.aggregate([
+      { $match: matchCondition },
+      { $sort: { createdAt: -1 } },
       {
         $facet: {
           metadata: [{ $count: "totalCount" }],
           data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
         },
       },
-    ];
+    ]);
 
-    const objectId = new mongoose.Types.ObjectId(idToUse);
-    const sessionUserObjectId = new mongoose.Types.ObjectId(sessionUserId);
-    if (mode === TweetModes.all) {
-      tweets = await Tweet.aggregate([
-        { $match: { tweetType: TweetType.tweet } },
-        ...commonPipeline,
-      ]);
-    } else if (mode === TweetModes.user && sessionUserId) {
-      tweets = await Tweet.aggregate([
-        { $match: { userId: sessionUserObjectId } },
-        ...commonPipeline,
-      ]);
-    } else if (mode === TweetModes.account) {
-      tweets = await Tweet.aggregate([
-        { $match: { userId: objectId } },
-        ...commonPipeline,
-      ]);
-    } else if (mode === TweetModes.subTweet) {
-      tweets = await Tweet.aggregate([
-        { $match: { tweetRefId: objectId, tweetType: TweetType.subTweet } },
-        ...commonPipeline,
-      ]);
+    if (!tweets || tweets.length <= 0) {
+      return null;
     }
 
-    if (tweets && tweets.length > 0) {
-      const tweetData = tweets[0].data;
+    const tweetData = tweets[0].data;
 
-      const users = await Promise.all(
-        tweetData.map(
-          async (tweet: ITweet) => await User.findById(tweet.userId)
-        )
-      );
+    const users = await Promise.all(
+      tweetData.map(async (tweet: ITweet) => await User.findById(tweet.userId))
+    );
 
-      const tweetPromises = tweetData.map(
-        async (tweet: ITweet, index: number) => {
-          const user = users[index];
-          if (user) {
-            let t: IModTweet = {
-              _id: tweet._id.toString(),
-              tweetContent: tweet.tweetContent,
-              likes: (await getLikesOfTweet(tweet._id)) || 0,
-              shares: (await getSharesOfTweet(tweet._id)) || 0,
-              username: user.username,
-              nickname: user.nickname,
-              image: user.image,
-              likedBy: false,
-              sharedBy: false,
-              tweetType: tweet.tweetType,
-            };
-            if (sessionUserId) {
-              [t.likedBy, t.sharedBy] = await Promise.all([
-                await isLikedByUser(sessionUserId, tweet._id),
-                await isSharedByUser(sessionUserId, tweet._id),
-              ]);
-            }
-            return t;
+    const tweetPromises = tweetData.map(
+      async (tweet: ITweet, index: number) => {
+        const user = users[index];
+        if (user) {
+          const t: IModTweet = {
+            _id: tweet._id.toString(),
+            userId: tweet.userId.toString(),
+            tweetContent: tweet.tweetContent,
+            likes: (await getLikesOfTweet(tweet._id.toString())) || 0,
+            shares: (await getSharesOfTweet(tweet._id.toString())) || 0,
+            username: user.username,
+            nickname: user.nickname,
+            image: user.image,
+            likedBy: false,
+            sharedBy: false,
+            tweetType: tweet.tweetType,
+          };
+          if (sessionUserId) {
+            [t.likedBy, t.sharedBy] = await Promise.all([
+              isLikedByUser(sessionUserId, tweet._id.toString()),
+              isSharedByUser(sessionUserId, tweet._id.toString()),
+            ]);
           }
-          return {};
+          return t;
         }
-      );
+        return {};
+      }
+    );
 
-      const tweetsToSend = await Promise.all(tweetPromises);
+    const tweetsToSend = await Promise.all(tweetPromises);
 
-      return tweetsToSend;
-    }
-    return null;
+    return tweetsToSend;
   } catch (err) {
     console.log(err);
     return null;
@@ -179,14 +214,19 @@ export const getTweet = async (
 ): Promise<IModTweet | null> => {
   try {
     const connect = await connectMongoDB();
+    if (!connect) {
+      console.log("Db not connected");
+      return null;
+    }
     const tweet: ITweet | null = await Tweet.findById(tweetId);
     const user: IUser | null = await User.findOne({ username: username });
     if (user && tweet) {
-      let t: IModTweet = {
+      const t: IModTweet = {
         _id: tweet._id.toString(),
+        userId: tweet.userId.toString(),
         tweetContent: tweet.tweetContent,
-        likes: (await getLikesOfTweet(tweet._id)) || 0,
-        shares: (await getSharesOfTweet(tweet._id)) || 0,
+        likes: (await getLikesOfTweet(tweet._id.toString())) || 0,
+        shares: (await getSharesOfTweet(tweet._id.toString())) || 0,
         username: user.username,
         nickname: user.nickname,
         image: user.image,
@@ -196,8 +236,8 @@ export const getTweet = async (
       };
       if (sessionUserId) {
         [t.likedBy, t.sharedBy] = await Promise.all([
-          await isLikedByUser(sessionUserId, tweet._id),
-          await isSharedByUser(sessionUserId, tweet._id),
+          await isLikedByUser(sessionUserId, tweet._id.toString()),
+          await isSharedByUser(sessionUserId, tweet._id.toString()),
         ]);
       }
       return t;

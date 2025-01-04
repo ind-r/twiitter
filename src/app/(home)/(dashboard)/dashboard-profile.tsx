@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { SessionType, options } from "../../api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import Signin from "@/app/siginin";
+import Image from "next/image";
 
 export default async function DashboardProfile() {
   const data: SessionType | null = await getServerSession(options);
@@ -23,8 +24,10 @@ export default async function DashboardProfile() {
       href={`/` + data.user.name}
       className="flex items-center gap-2 p-4 dark:hover:bg-zinc-800 hover:bg-gray-50 rounded-lg justify-center"
     >
-      <img
+      <Image
         alt="img"
+        width={100}
+        height={100}
         src={httpsImage ? image : "default-user.png"}
         className="size-10 rounded-full object-cover h-10 w-10"
       />

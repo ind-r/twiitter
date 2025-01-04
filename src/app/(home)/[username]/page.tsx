@@ -32,7 +32,7 @@ export default async function Profile({
           </>
         }
       >
-        <Tweets data={data} mode={TweetModes.user} />
+        <Tweets data={data} mode={TweetModes.account} username={username} />
       </Suspense>
     </>
   );

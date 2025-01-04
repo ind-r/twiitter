@@ -9,12 +9,12 @@ import { IModTweet } from "@/types/models/tweet";
 import { getTweets } from "@/actions/tweets";
 
 export default function Tweets({
-  userId,
+  username,
   data,
   mode,
   tweetRefId,
 }: {
-  userId?: string | undefined;
+  username?: string | undefined;
   data: SessionType | null;
   mode: TweetModes;
   tweetRefId?: string;
@@ -25,43 +25,46 @@ export default function Tweets({
   const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const loadMoreTweets = async (idToUse?: string) => {
-    if (isLoading) return;
-    setIsLoading(true);
-    const nextPage = pagesLoaded + 1;
-    console.log("loading", nextPage);
-    const newTweets: Array<IModTweet> | null = await getTweets(
-      mode,
-      nextPage,
-      8,
-      data?.user?.userId,
-      idToUse
-    );
-    if (newTweets) {
-      setTweets((prevTweets: IModTweet[]) => [...prevTweets, ...newTweets]);
-      setPagesLoaded(nextPage);
-      if (newTweets.length === 0) {
-        setNoMoreTweets(true);
-      } else {
-        setNoMoreTweets(false);
-      }
-    }
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const loadMoreTweets = async ({
+      tweetRefId,
+      username,
+    }: {
+      tweetRefId?: string;
+      username?: string;
+    }) => {
+      if (isLoading) return;
+      setIsLoading(true);
+      const nextPage = pagesLoaded + 1;
+      const newTweets: Array<IModTweet> | null = await getTweets({
+        mode,
+        page: nextPage,
+        pageSize: 8,
+        sessionUserId: data?.user.userId,
+        usernameToUse: username,
+        tweetRefId,
+      });
+      if (newTweets) {
+        setTweets((prevTweets: IModTweet[]) => [...prevTweets, ...newTweets]);
+        setPagesLoaded(nextPage);
+        if (newTweets.length === 0) {
+          setNoMoreTweets(true);
+        } else {
+          setNoMoreTweets(false);
+        }
+      }
+      setIsLoading(false);
+    };
     if (isLoading || noMoreTweets) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoading && !noMoreTweets) {
           if (mode === TweetModes.all) {
-            loadMoreTweets();
-          } else if (mode === TweetModes.user) {
-            loadMoreTweets(data?.user?.userId);
+            loadMoreTweets({});
           } else if (mode === TweetModes.account) {
-            loadMoreTweets(userId);
+            loadMoreTweets({ username });
           } else if (mode === TweetModes.subTweet && tweetRefId) {
-            loadMoreTweets(tweetRefId);
+            loadMoreTweets({ tweetRefId });
           }
         }
       },
@@ -81,10 +84,19 @@ export default function Tweets({
         observer.unobserve(currentRef);
       }
     };
-  }, [ref, isLoading, noMoreTweets, mode, data, userId, tweetRefId]);
+  }, [
+    ref,
+    isLoading,
+    noMoreTweets,
+    mode,
+    data,
+    username,
+    tweetRefId,
+    pagesLoaded,
+  ]);
   return (
     <>
-      {tweets?.length ? (
+      {tweets?.length > 0 &&
         tweets.map((tweet: IModTweet) => {
           return (
             <Tweet
@@ -100,23 +112,19 @@ export default function Tweets({
               sharedBy={tweet.sharedBy}
               sessionUserId={data?.user?.userId}
               mode={mode}
+              userTweetedThis={data?.user.userId === tweet.userId}
             />
           );
-        })
-      ) : (
-        <>
-          <TweetSkel />
-        </>
-      )}
-      <div className="" ref={ref}>
+        })}
+      <div ref={ref}>
         {!noMoreTweets ? (
           <>
             <TweetSkel />
             <Spinner />
           </>
         ) : (
-          <h1 className="h-32 flex justify-center items-center font-semibold dark:text-white">
-            NO MORE TWEETS
+          <h1 className="h-32 flex justify-center items-center dark:text-zinc-700">
+            uh oh, no more tweets
           </h1>
         )}
       </div>

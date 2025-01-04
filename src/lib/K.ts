@@ -5,5 +5,6 @@ export const K = {
     register: "/auth/register",
     profile: "/profile",
     settings: "/account/settings",
+    search: "/search",
   },
 };

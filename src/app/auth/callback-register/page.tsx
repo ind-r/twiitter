@@ -1,11 +1,11 @@
-import { getServerSession } from "next-auth";
+import { getServerSession, Session } from "next-auth";
 import Form from "./form";
-import { SessionType, options } from "@/app/api/auth/[...nextauth]/options";
+import { options } from "@/app/api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import SignOut from "@/app/signout";
 
 export default async function Callback() {
-  const data: SessionType | null = await getServerSession(options);
+  const data: Session | null = await getServerSession(options);
 
   if (data && data.user.name === "0") {
     return (

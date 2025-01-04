@@ -7,6 +7,19 @@ import connectMongoDB from "@/lib/MongooseConnect";
 import { IUser } from "@/types/models/user";
 import MUser from "@/lib/models/userModel";
 
+declare module "next-auth" {
+  interface Session {
+    accessToken: string;
+    user: {
+      name: string;
+      nickname: string;
+      email: string;
+      image: string;
+      userId: string;
+    };
+  }
+}
+
 export interface SessionType extends Session {
   user: {
     name: string;
@@ -44,12 +57,16 @@ export const options = {
             return null;
           }
           const db = await connectMongoDB();
+          if (!db) {
+            return null;
+          }
+          let user: IUser | null = null;
           if (credentials.email !== " ") {
-            var user: IUser | null = await MUser.findOne({
+            user = await MUser.findOne({
               email: credentials.email,
             });
           } else {
-            var user: IUser | null = await MUser.findOne({
+            user = await MUser.findOne({
               username: credentials.username,
             });
           }
@@ -68,7 +85,7 @@ export const options = {
           }
 
           const userToSubmit: UserToSubmit = {
-            id: user._id,
+            id: user._id.toString(),
             name: user.username,
             nickname: user.nickname,
             email: user.email,
@@ -99,14 +116,14 @@ export const options = {
       user: User | AdapterUser;
       profile?: Profile | undefined;
       trigger?: "update" | "signIn" | "signUp" | undefined;
-      session?: any;
+      session?: Session;
     }) {
       if (trigger === "update") {
-        if (session.name) {
-          token.name = session.name;
-          token.nickname = session.nickname;
-        } else {
-          token.nickname = session.nickname;
+        if (session && session.user.name) {
+          token.name = session.user.name;
+        }
+        if (session && session.user.nickname) {
+          token.nickname = session.user.nickname;
         }
         return token;
       }
@@ -121,6 +138,9 @@ export const options = {
         if (profile) {
           try {
             const db = await connectMongoDB(); // Ensure the connection is handled correctly in connectMongo
+            if (!db) {
+              console.log("MongoDB connection failed");
+            }
             const dbUser: IUser | null = await MUser.findOne({
               email: profile.email,
             });
@@ -146,19 +166,18 @@ export const options = {
       }
       return token; // Return the modified token
     },
-    async session({ session, token }: { session: any; token: TokenSet }) {
+    async session({ session, token }: { session: Session; token: TokenSet }) {
       // this token return above jwt()
-      session.accessToken = token.accessToken;
-      session.user.userId = token.userId;
-      session.user.nickname = token.nickname;
+      session.accessToken = token.accessToken as string;
+      session.user.userId = token.userId as string;
+      session.user.nickname = token.nickname as string;
       //if you want to add user details info
       // console.log(session);
       return session;
     },
 
     async redirect() {
-      const apiUrl = process.env.NEXTAUTH_URL as string;
-      return `/home`;
+      return `/`;
     },
 
     async signIn({
@@ -188,7 +207,7 @@ export const options = {
           });
 
           if (!user) {
-            var newUser = new MUser({
+            const newUser = new MUser({
               email: profile.email,
               nickname: "0",
               username: "0",

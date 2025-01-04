@@ -1,7 +1,6 @@
 "use client";
 import { changeNickName } from "@/actions/users";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -11,6 +10,10 @@ export default function ChangeNick() {
 
   const handleClick = async (e: FormData) => {
     const nick = e.get("nickname") as string;
+    if (!nick || nick.trim() === "") {
+      alert("Nickname cannot be empty");
+      return;
+    }
     if (data) {
       const result = await changeNickName(data.user.userId, nick);
       if (result?.status === 200) {
@@ -25,7 +28,12 @@ export default function ChangeNick() {
   return (
     <form action={handleClick} className="ml-auto">
       <div className="flex w-full max-w-sm items-center space-x-2">
-        <Input type="text" placeholder="new nick" name="nickname" />
+        <input
+          type="text"
+          className="border-none bg-zinc-950 rounded-xl p-2 w-full"
+          placeholder="New Nick"
+          name="nickname"
+        />
         <Button type="submit">Change</Button>
       </div>
     </form>

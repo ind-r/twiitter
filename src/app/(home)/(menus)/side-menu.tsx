@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Menu from "../(dashboard)/menu";
+import Image from "next/image";
 
 export default function SideMenu({
   name,
@@ -18,9 +19,11 @@ export default function SideMenu({
             href={`/` + name}
             className="flex items-center gap-2 p-4 dark:hover:bg-zinc-800 hover:bg-gray-50"
           >
-            <img
-              alt="img"
+            <Image
               src={httpsImage ? image : "default-user.png"}
+              width={100}
+              height={100}
+              alt="img"
               className="size-10 rounded-full object-cover h-10 w-10"
             />
             <p className="block font-medium dark:text-white">{name}</p>

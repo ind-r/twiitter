@@ -12,7 +12,7 @@ export const getUserInfoByUsername = async (username: string) => {
       console.log("Db not connected");
       return null;
     }
-    const user: IUser | null = await User.findById(username);
+    const user: IUser | null = await User.findOne({ username });
     if (user) {
       const userToSend: ISUser = {
         username: user.username,

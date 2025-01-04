@@ -1,8 +1,5 @@
 "use client";
 import { deleteTweet } from "@/actions/tweets";
-import { Button } from "@/components/ui/button";
-import { faRemove } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function DeleteTweet({
   sessionUserId,
@@ -15,10 +12,8 @@ export default function DeleteTweet({
     await deleteTweet(sessionUserId, tweetId);
   };
   return (
-    <div className="float-right m-4 p-4">
-      <Button variant="destructive" onClick={handleClick}>
-        <FontAwesomeIcon icon={faRemove} />
-      </Button>
+    <div onClick={handleClick} className="text-red-600 p-2">
+      Delete
     </div>
   );
 }

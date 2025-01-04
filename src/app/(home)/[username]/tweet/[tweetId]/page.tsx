@@ -9,10 +9,11 @@ import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 
 export default async function FullTweet({
-  params: { username, tweetId },
+  params,
 }: {
-  params: { username: string; tweetId: string };
+  params: { username: Promise<string>; tweetId: Promise<string> };
 }) {
+  const [username, tweetId] = await Promise.all(Object.values(params));
   const data: SessionType | null = await getServerSession(options);
   const tweet: IModTweet | null = await getTweet(
     tweetId,

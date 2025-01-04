@@ -6,6 +6,7 @@ import Like from "./like";
 import Share from "./share";
 import Link from "next/link";
 import { TweetModes } from "@/types/enums";
+import { K } from "@/lib/K";
 
 export default function LikeAndShareComment({
   username,
@@ -40,7 +41,7 @@ export default function LikeAndShareComment({
           </>
         ) : (
           <Link
-            href="auth/signin"
+            href={K.Links.signin}
             className="flex flex-col items-center cursor-pointer"
           >
             <FontAwesomeIcon className="float-left" icon={faHeart} />
@@ -61,7 +62,7 @@ export default function LikeAndShareComment({
           </>
         ) : (
           <Link
-            href="auth/signin"
+            href={K.Links.signin}
             className="flex flex-col items-center cursor-pointer"
           >
             <FontAwesomeIcon className="float-left" icon={faRetweet} />
@@ -74,18 +75,18 @@ export default function LikeAndShareComment({
         <div className="flex flex-col items-center">
           {sessionUserId ? (
             <>
-              <a href={`/home/${username}/tweet/${tweetId}`}>
+              <Link href={`/${username}/tweet/${tweetId}`}>
                 <FontAwesomeIcon
                   color="gray-500"
                   className="float-left"
                   icon={faComment}
                 />
-              </a>
-              <h1>Comment</h1>
+              </Link>
+              <h1>some</h1>
             </>
           ) : (
             <Link
-              href="auth/signin"
+              href={K.Links.signin}
               className="flex flex-col items-center cursor-pointer"
             >
               <FontAwesomeIcon className="float-left" icon={faRetweet} />
@@ -97,5 +98,3 @@ export default function LikeAndShareComment({
     </div>
   );
 }
-
-// not loged in

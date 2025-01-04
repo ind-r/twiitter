@@ -1,4 +1,4 @@
-export default function SearchMenu() {
+export default function Guide() {
   return (
     <>
       <div className="h-full flex flex-col pt-2 dark:text-white">
