@@ -4,9 +4,11 @@ import { useState } from "react";
 
 interface Props {
   submit(user: { username: string; password: string; email: string }): void;
+  loading: boolean;
+  setLoading(loading: boolean): void;
 }
 
-export default function Form({ submit }: Props) {
+export default function Form({ submit, loading, setLoading }: Props) {
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -125,14 +127,22 @@ export default function Form({ submit }: Props) {
       <div>{errors.verifyPassword}</div>
       <button
         onClick={async () => {
+          setLoading(true);
           if (await validateUser()) {
             submit(user);
           }
+          setLoading(false);
         }}
         type="button"
-        className={`text-white rounded-lg p-2 mt-5 bg-red-800 hover:bg-red-900`}
+        disabled={loading}
+        className={`text-white rounded-lg p-2 mt-5
+          ${
+            loading
+              ? "cursor-not-allowed bg-gray-500"
+              : "bg-red-800 hover:bg-red-900"
+          }`}
       >
-        Register
+        {loading ? "Loading..." : "Register"}
       </button>
     </form>
   );

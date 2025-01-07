@@ -9,13 +9,17 @@ import MUser from "@/lib/models/userModel";
 
 declare module "next-auth" {
   interface Session {
-    user: { 
-      userId: string
+    user: {
+      userId: string;
       name?: string | null | undefined;
       email?: string | null | undefined;
       image?: string | null | undefined;
       nickname?: string | null | undefined;
+      bio?: string | null | undefined;
     };
+    bio?: string; // for updating bio
+    name?: string; // for updating name
+    nickname?: string; // for updating nickname
   }
   interface User {
     id: string;
@@ -23,6 +27,7 @@ declare module "next-auth" {
     nickname: string;
     email: string;
     image: string;
+    bio: string;
   }
   interface Profile {
     picture?: string;
@@ -47,11 +52,15 @@ export const options = {
           if (!credentials) {
             return null;
           }
+
           const db = await connectMongoDB();
+
           if (!db) {
             return null;
           }
+
           let user: IUser | null = null;
+
           if (credentials.email !== " ") {
             user = await MUser.findOne({
               email: credentials.email,
@@ -81,6 +90,7 @@ export const options = {
             nickname: user.nickname,
             email: user.email,
             image: user.image,
+            bio: user.bio,
           };
 
           return userToSubmit;
@@ -108,21 +118,13 @@ export const options = {
       trigger?: "update" | "signIn" | "signUp" | undefined;
       session?: Session;
     }) {
-      if (trigger === "update") {
-        if (session && session.user.name) {
-          token.name = session.user.name;
-        }
-        if (session && session.user.nickname) {
-          token.nickname = session.user.nickname;
-        }
-        return token;
-      }
       if (account) {
         token.name = user.name;
         token.email = user.email;
         token.picture = user.image;
         token.userId = user.id;
         token.nickname = user.nickname;
+        token.bio = user.bio;
 
         if (profile) {
           try {
@@ -139,6 +141,7 @@ export const options = {
               token.name = dbUser.username;
               token.nickname = dbUser.nickname;
               token.picture = dbUser.image;
+              token.bio = dbUser.bio;
             } else {
               console.log("User not found");
             }
@@ -149,11 +152,25 @@ export const options = {
           token.email = profile.email;
         }
       }
+      if (trigger === "update") {
+        if (session && session.name) {
+          token.name = session.name;
+        }
+        if (session && session.nickname) {
+          token.nickname = session.nickname;
+        }
+        if (session && session.bio) {
+          token.bio = session.bio;
+        }
+      }
       return token;
     },
     async session({ session, token }: { session: Session; token: TokenSet }) {
+      session.user.name = token.name as string;
       session.user.userId = token.userId as string;
       session.user.nickname = token.nickname as string;
+      session.user.bio = token.bio as string;
+      session.user.image = token.picture as string;
       return session;
     },
 
@@ -192,6 +209,7 @@ export const options = {
               email: profile.email,
               nickname: "0",
               username: "0",
+              bio: "",
               googleId: account.providerAccountId,
               image: profile.picture,
             });

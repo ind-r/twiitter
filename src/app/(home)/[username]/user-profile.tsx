@@ -3,9 +3,9 @@ import Image from "next/image";
 
 export default async function UserProfile({ username }: { username: string }) {
   const user = await getUserInfoByUsername(username);
-  let image = "/default-user.png"
-  if (user && user.image && image.includes("https://")) {
-    image = user.image
+  let image = "/default-user.png";
+  if (user && user.image && user.image.includes("http")) {
+    image = user.image;
   }
   return (
     <div className="border-b dark:border-zinc-800">

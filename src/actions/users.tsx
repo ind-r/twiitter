@@ -18,6 +18,7 @@ export const getUserInfoByUsername = async (username: string) => {
         username: user.username,
         nickname: user.nickname,
         image: user.image,
+        bio: user.bio,
       };
       return userToSend;
     }
@@ -40,6 +41,7 @@ export const getUserInfo = async (userId: string) => {
         username: user.username,
         nickname: user.nickname,
         image: user.image,
+        bio: user.bio,
       };
       return userToSend;
     }
@@ -56,17 +58,46 @@ export const changeNickName = async (
 ): Promise<{ status: number; message: string } | undefined> => {
   try {
     const connect = await connectMongoDB();
-    if (connect) {
-      const user: IUser | null = await User.findById(userId);
-      if (user) {
-        user.nickname = nickname;
-        user.save();
-        revalidatePath("/");
-        return { status: 200, message: "User saved" };
-      }
+
+    if (!connect) {
+      return { message: "Db Not Connected", status: 500 };
+    }
+
+    const user: IUser | null = await User.findById(userId);
+
+    if (!user) {
       return { message: "User not found", status: 404 };
     }
-    return { message: "Db Not Connected", status: 500 };
+    user.nickname = nickname;
+    user.save();
+    revalidatePath("/");
+    return { status: 200, message: "User saved" };
+  } catch (err) {
+    console.log(err);
+    return { message: "ERROR", status: 500 };
+  }
+};
+
+export const changeBio = async (
+  userId: string,
+  bio: string
+): Promise<{ status: number; message: string } | undefined> => {
+  try {
+    const connect = await connectMongoDB();
+
+    if (!connect) {
+      return { message: "Db Not Connected", status: 500 };
+    }
+
+    const user: IUser | null = await User.findById(userId);
+
+    if (!user) {
+      return { message: "User not found", status: 404 };
+    }
+    user.bio = bio;
+    user.save();
+    revalidatePath("/");
+    return { status: 200, message: "User saved" };
   } catch (err) {
     console.log(err);
     return { message: "ERROR", status: 500 };

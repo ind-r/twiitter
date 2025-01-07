@@ -4,14 +4,26 @@ import Image from "next/image";
 
 interface CardProps {
   auth: string;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
-export default function Card({ auth }: CardProps) {
+export default function Card({ auth, loading, setLoading }: CardProps) {
   return (
     <div className="">
       <button
-        className="bg-yellow-400 pr-4 mt-5 rounded-lg shadow shadow-borderGray text-white hover:bg-yellow-500"
-        onClick={() => signIn(auth.toLowerCase())}
+        className={`pr-4 mt-5 rounded-lg shadow shadow-borderGray text-white
+          ${
+            loading
+              ? "cursor-not-allowed bg-gray-500"
+              : "bg-yellow-500 hover:bg-yellow-600"
+          }`}
+        disabled={loading}
+        onClick={() => {
+          setLoading(true);
+          signIn(auth.toLowerCase());
+          setLoading(false);
+        }}
         role="button"
       >
         <Image

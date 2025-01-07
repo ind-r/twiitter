@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import SignInCard from "../signincard";
 import Form from "./form";
 import { signIn } from "next-auth/react";
@@ -9,6 +10,7 @@ export default function Signin({
   params: { [key: string]: string };
 }) {
   const { error } = params;
+  const [loading, setLoading] = useState(false);
   async function submit({
     email,
     password,
@@ -16,6 +18,7 @@ export default function Signin({
     email: string;
     password: string;
   }) {
+    setLoading(true);
     if (email.includes("@")) {
       const status = await signIn("credentials", {
         email,
@@ -33,12 +36,13 @@ export default function Signin({
       });
       console.log(status);
     }
+    setLoading(false);
   }
   return (
     <div className="flex flex-col items-center text-white rounded-xl justify-center h-screen">
       <h1 className="text-5xl">Sign In</h1>
-      <Form submit={submit} error={error} />
-      <SignInCard auth="Google" />
+      <Form submit={submit} error={error} loading={loading} />
+      <SignInCard auth="Google" loading={loading} setLoading={setLoading} />
     </div>
   );
 }

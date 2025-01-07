@@ -5,10 +5,11 @@ import { useState } from "react";
 
 interface Props {
   submit(user: { email: string; password: string }): void;
+  loading: boolean;
   error: string;
 }
 
-export default function Form({ submit, error }: Props) {
+export default function Form({ submit, error, loading }: Props) {
   const [user, setUser] = useState({ email: "", password: "" });
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -50,9 +51,15 @@ export default function Form({ submit, error }: Props) {
             submit(user);
           }}
           type="button"
-          className="text-white bg-gray-500 rounded-lg p-2 mt-5 hover:bg-gray-600"
+          disabled={loading}
+          className={`text-white rounded-lg p-2 mt-5
+            ${
+              loading
+                ? "cursor-not-allowed bg-gray-500 "
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
         >
-          Login
+          {loading ? "Loading..." : "Login"}
         </button>
         {error === "CredentialsSignin" && (
           <ul className="list-disc px-6 pt-2">
@@ -63,7 +70,7 @@ export default function Form({ submit, error }: Props) {
       <div className="flex flex-col">
         <Link
           href="/auth/register"
-          className="text-white bg-gray-500 rounded-lg p-2 mt-5 hover:bg-gray-600 text-center"
+          className="text-white bg-blue-500 rounded-lg p-2 mt-5 hover:bg-blue-600 text-center"
         >
           <button>Sign Up</button>
         </Link>
