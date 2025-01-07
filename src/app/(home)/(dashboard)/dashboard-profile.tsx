@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { SessionType, options } from "../../api/auth/[...nextauth]/options";
+import { options } from "../../api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import Signin from "@/app/siginin";
 import Image from "next/image";
+import { Session } from "next-auth";
+import { K } from "@/lib/K";
 
 export default async function DashboardProfile() {
-  const data: SessionType | null = await getServerSession(options);
+  const data: Session | null = await getServerSession(options);
   if (!data) {
     return (
       <div className="p-8 mx-auto">
@@ -14,7 +16,10 @@ export default async function DashboardProfile() {
       </div>
     );
   }
-  const image: string = data.user.image;
+  const image = data.user.image;
+  if (!image) {
+    redirect(K.Links.home)
+  }
   const httpsImage: boolean = image.includes("http") && image.includes("://");
   if (data.user.name === "0") {
     redirect("/auth/callback-register");
@@ -28,7 +33,7 @@ export default async function DashboardProfile() {
         alt="img"
         width={100}
         height={100}
-        src={httpsImage ? image : "default-user.png"}
+        src={httpsImage ? image : "/default-user.png"}
         className="size-10 rounded-full object-cover h-10 w-10"
       />
 

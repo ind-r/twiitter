@@ -20,7 +20,7 @@ export default function SideMenu({
             className="flex items-center gap-2 p-4 dark:hover:bg-zinc-800 hover:bg-gray-50"
           >
             <Image
-              src={httpsImage ? image : "default-user.png"}
+              src={httpsImage ? image : "/default-user.png"}
               width={100}
               height={100}
               alt="img"

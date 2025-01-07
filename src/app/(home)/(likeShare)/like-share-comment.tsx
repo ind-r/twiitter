@@ -14,6 +14,7 @@ export default function LikeAndShareComment({
   sessionUserId,
   likes,
   shares,
+  comments,
   likedBy,
   sharedBy,
   mode,
@@ -23,6 +24,7 @@ export default function LikeAndShareComment({
   sessionUserId: string | undefined;
   likes: number;
   shares: number;
+  comments: number;
   likedBy: boolean;
   sharedBy: boolean;
   mode: TweetModes;
@@ -73,26 +75,14 @@ export default function LikeAndShareComment({
 
       {mode !== TweetModes.full && (
         <div className="flex flex-col items-center">
-          {sessionUserId ? (
-            <>
-              <Link href={`/${username}/tweet/${tweetId}`}>
-                <FontAwesomeIcon
-                  color="gray-500"
-                  className="float-left"
-                  icon={faComment}
-                />
-              </Link>
-              <h1>some</h1>
-            </>
-          ) : (
-            <Link
-              href={K.Links.signin}
-              className="flex flex-col items-center cursor-pointer"
-            >
-              <FontAwesomeIcon className="float-left" icon={faRetweet} />
-              <h1>{shares}</h1>
-            </Link>
-          )}
+          <Link href={`/${username}/tweet/${tweetId}`}>
+            <FontAwesomeIcon
+              color="gray-500"
+              className="float-left"
+              icon={faComment}
+            />
+          </Link>
+          <h1>{comments}</h1>
         </div>
       )}
     </div>

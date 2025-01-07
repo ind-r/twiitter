@@ -1,22 +1,28 @@
-import { getServerSession } from "next-auth";
-import { SessionType, options } from "../../api/auth/[...nextauth]/options";
+import { getServerSession, Session } from "next-auth";
+import { options } from "../../api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ChangeNick from "./changeNick";
+import { K } from "@/lib/K";
 
 export default async function Settings() {
-  const data: SessionType | null = await getServerSession(options);
+  const data: Session | null = await getServerSession(options);
 
-  if (data) {
+  if (!data) { 
+    redirect(K.Links.home)
+  }
     const username = data.user.name;
     const nickname = data.user.nickname;
-    const image: string = data.user.image;
-    const httpsImage: boolean = image.includes("http") && image.includes("://");
+    const image = data.user.image;
+    if (!username || !nickname || !image) {
+      redirect(K.Links.home)
+    }
     if (username === "0") {
       redirect("/auth/callback-register");
     }
+    const httpsImage = image.includes("http") && image.includes("://");
 
     return (
       <div className="container mx-auto flex lg:flex-row flex-col pt-20 border broder-borderGray rounded-xl mt-20 p-10">
@@ -57,7 +63,4 @@ export default async function Settings() {
         </div>
       </div>
     );
-  } else {
-    redirect("/");
-  }
 }

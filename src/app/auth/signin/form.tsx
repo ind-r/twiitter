@@ -5,9 +5,10 @@ import { useState } from "react";
 
 interface Props {
   submit(user: { email: string; password: string }): void;
+  error: string;
 }
 
-export default function Form({ submit }: Props) {
+export default function Form({ submit, error }: Props) {
   const [user, setUser] = useState({ email: "", password: "" });
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -53,6 +54,11 @@ export default function Form({ submit }: Props) {
         >
           Login
         </button>
+        {error === "CredentialsSignin" && (
+          <ul className="list-disc px-6 pt-2">
+            <li className="text-red-500">Invalid Credentials</li>
+          </ul>
+        )}
       </form>
       <div className="flex flex-col">
         <Link

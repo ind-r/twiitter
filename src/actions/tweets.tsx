@@ -179,6 +179,8 @@ export const getTweets = async (
             tweetContent: tweet.tweetContent,
             likes: (await getLikesOfTweet(tweet._id.toString())) || 0,
             shares: (await getSharesOfTweet(tweet._id.toString())) || 0,
+            comments:
+              (await Tweet.countDocuments({ tweetRefId: tweet._id })) || 0,
             username: user.username,
             nickname: user.nickname,
             image: user.image,
@@ -227,6 +229,7 @@ export const getTweet = async (
         tweetContent: tweet.tweetContent,
         likes: (await getLikesOfTweet(tweet._id.toString())) || 0,
         shares: (await getSharesOfTweet(tweet._id.toString())) || 0,
+        comments: (await Tweet.countDocuments({ tweetRefId: tweet._id })) || 0,
         username: user.username,
         nickname: user.nickname,
         image: user.image,

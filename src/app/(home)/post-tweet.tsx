@@ -71,7 +71,7 @@ export default function PostTweet({
           />
         ) : (
           <Image
-            className="float-left h-16 w-16 border-4 ml-4"
+            className="float-left h-16 w-16 ml-4"
             alt="userImage"
             height="100"
             width="100"
@@ -80,7 +80,7 @@ export default function PostTweet({
         )}
         <form className="ml-20 mr-3">
           <textarea
-            className="border-none bg-zinc-950 rounded-xl p-2 w-full"
+            className="border-none dark:bg-zinc-950 rounded-xl p-2 w-full"
             rows={2}
             placeholder={placeholderText}
             onChange={handleInputChange}

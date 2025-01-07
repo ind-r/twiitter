@@ -22,6 +22,7 @@ export interface IModTweet {
   tweetContent: string;
   likes: number;
   shares: number;
+  comments: number;
   username: string;
   nickname: string;
   image: string;

@@ -1,5 +1,5 @@
-import { SessionType, options } from "@/app/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth";
+import {  options } from "@/app/api/auth/[...nextauth]/options";
+import { getServerSession, Session } from "next-auth";
 import { Suspense } from "react";
 import TweetSkel from "../tweet-skel";
 import Tweets from "../tweets-container";
@@ -11,10 +11,10 @@ import UserProfile from "./user-profile";
 export default async function Profile({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
   const username = (await params).username;
-  const data: SessionType | null = await getServerSession(options);
+  const data: Session| null = await getServerSession(options);
   if (!data || !username) {
     redirect(K.Links.signin);
   }

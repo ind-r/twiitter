@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Tweet from "./tweet-container";
-import { SessionType } from "@/app/api/auth/[...nextauth]/options";
 import { Spinner } from "./spinner";
 import TweetSkel from "./tweet-skel";
 import { TweetModes } from "@/types/enums";
 import { IModTweet } from "@/types/models/tweet";
 import { getTweets } from "@/actions/tweets";
+import { Session } from "next-auth";
 
 export default function Tweets({
   username,
@@ -15,7 +15,7 @@ export default function Tweets({
   tweetRefId,
 }: {
   username?: string | undefined;
-  data: SessionType | null;
+  data: Session | null;
   mode: TweetModes;
   tweetRefId?: string;
 }) {
@@ -108,6 +108,7 @@ export default function Tweets({
               image={tweet.image}
               likes={tweet.likes}
               shares={tweet.shares}
+              comments={tweet.comments}
               likedBy={tweet.likedBy}
               sharedBy={tweet.sharedBy}
               sessionUserId={data?.user?.userId}

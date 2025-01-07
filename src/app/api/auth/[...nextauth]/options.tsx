@@ -9,33 +9,24 @@ import MUser from "@/lib/models/userModel";
 
 declare module "next-auth" {
   interface Session {
-    accessToken: string;
-    user: {
-      name: string;
-      nickname: string;
-      email: string;
-      image: string;
-      userId: string;
+    user: { 
+      userId: string
+      name?: string | null | undefined;
+      email?: string | null | undefined;
+      image?: string | null | undefined;
+      nickname?: string | null | undefined;
     };
   }
-}
-
-export interface SessionType extends Session {
-  user: {
+  interface User {
+    id: string;
     name: string;
     nickname: string;
     email: string;
     image: string;
-    userId: string;
-  };
-}
-
-interface UserToSubmit extends User {
-  nickname: string;
-}
-
-interface CustomProfile extends Profile {
-  picture?: string;
+  }
+  interface Profile {
+    picture?: string;
+  }
 }
 
 export const options = {
@@ -84,14 +75,13 @@ export const options = {
             return null;
           }
 
-          const userToSubmit: UserToSubmit = {
+          const userToSubmit: User = {
             id: user._id.toString(),
             name: user.username,
             nickname: user.nickname,
             email: user.email,
             image: user.image,
           };
-          console.log(userToSubmit);
 
           return userToSubmit;
         } catch (error) {
@@ -128,16 +118,15 @@ export const options = {
         return token;
       }
       if (account) {
-        // Set these once, as they do not depend on the database lookup
-        token.accessToken = account.access_token;
         token.name = user.name;
         token.email = user.email;
         token.picture = user.image;
         token.userId = user.id;
+        token.nickname = user.nickname;
 
         if (profile) {
           try {
-            const db = await connectMongoDB(); // Ensure the connection is handled correctly in connectMongo
+            const db = await connectMongoDB();
             if (!db) {
               console.log("MongoDB connection failed");
             }
@@ -146,33 +135,25 @@ export const options = {
             });
 
             if (dbUser) {
-              // Update token with data from database
               token.userId = dbUser._id;
               token.name = dbUser.username;
               token.nickname = dbUser.nickname;
               token.picture = dbUser.image;
             } else {
               console.log("User not found");
-              // Optionally handle user not found scenario
             }
           } catch (error) {
             console.log("Error accessing MongoDB:", error);
-            // Optionally handle the error, e.g., by setting an error flag in the token
           }
 
-          // These should only be set if profile is available
           token.email = profile.email;
         }
       }
-      return token; // Return the modified token
+      return token;
     },
     async session({ session, token }: { session: Session; token: TokenSet }) {
-      // this token return above jwt()
-      session.accessToken = token.accessToken as string;
       session.user.userId = token.userId as string;
       session.user.nickname = token.nickname as string;
-      //if you want to add user details info
-      // console.log(session);
       return session;
     },
 
@@ -185,7 +166,7 @@ export const options = {
       profile,
     }: {
       account: Account | null;
-      profile?: CustomProfile | undefined; // Make profile optional if required by the library
+      profile?: Profile | undefined;
     }): Promise<boolean> {
       if (!account) {
         return false;
@@ -198,7 +179,7 @@ export const options = {
           const connect = await connectMongoDB();
 
           if (!connect) {
-            return false; // Ensure a boolean is returned if `connect` is falsy
+            return false;
           }
 
           const user: IUser | null = await MUser.findOne({
@@ -215,7 +196,7 @@ export const options = {
               image: profile.picture,
             });
 
-            await newUser.save(); // Ensure `save` operation is awaited
+            await newUser.save();
           } else if (!user.googleId) {
             user.googleId = account.providerAccountId;
             user.save();
@@ -223,7 +204,7 @@ export const options = {
           return true;
         } catch (error) {
           console.log(error);
-          return false; // Ensure a boolean is returned in the catch block
+          return false;
         }
       } else if (account.provider === "credentials") {
         return true;

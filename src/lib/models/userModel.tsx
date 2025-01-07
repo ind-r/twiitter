@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   nickname: String,
   googleId: String,
-  password: { type: String, select: false },
+  password: { type: String },
   image: String,
 });
 userSchema.set("timestamps", true);
@@ -16,7 +16,3 @@ const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
 
-// tweets: [String],
-// comments: [String],
-// likes: [String],
-// shares: [String],

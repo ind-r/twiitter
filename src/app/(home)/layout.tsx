@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <BottomMenu />
       </main>
-      <div className="hidden md:block p-4 basis-1/3 dark:bg-zinc-950">
+      <div className="hidden lg:block p-4 basis-1/3 dark:bg-zinc-950">
         <Guide />
       </div>
     </div>

@@ -3,6 +3,10 @@ import Image from "next/image";
 
 export default async function UserProfile({ username }: { username: string }) {
   const user = await getUserInfoByUsername(username);
+  let image = "/default-user.png"
+  if (user && user.image && image.includes("https://")) {
+    image = user.image
+  }
   return (
     <div className="border-b dark:border-zinc-800">
       <div className="w-full h-[200px] overflow-hidden">
@@ -16,7 +20,7 @@ export default async function UserProfile({ username }: { username: string }) {
       </div>
       <div className="px-10 min-h-[250px]">
         <Image
-          src={user?.image || "/default-user.png"}
+          src={image}
           height={200}
           width={200}
           alt="user image"

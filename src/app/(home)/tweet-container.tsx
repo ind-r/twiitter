@@ -1,6 +1,6 @@
 "use client";
 import { TweetModes } from "@/types/enums";
-import LikeAndShare from "./(likeShare)/like-share-comment";
+import LikeAndShareAndComment from "./(likeShare)/like-share-comment";
 import Link from "next/link";
 import ThreeDots from "./threeDots";
 import Image from "next/image";
@@ -12,6 +12,7 @@ export default function Tweet({
   nickname,
   image,
   likes,
+  comments,
   shares,
   sessionUserId,
   likedBy,
@@ -26,6 +27,7 @@ export default function Tweet({
   tweetId: string;
   likes: number;
   shares: number;
+  comments: number;
   likedBy: boolean;
   sharedBy: boolean;
   sessionUserId: string | undefined;
@@ -51,12 +53,13 @@ export default function Tweet({
       <div className="mr-6 pb-1 ml-16">
         <h1>{tweetContent}</h1>
       </div>
-      <LikeAndShare
+      <LikeAndShareAndComment
         username={username}
         tweetId={tweetId}
         sessionUserId={sessionUserId}
         likes={likes}
         shares={shares}
+        comments={comments}
         likedBy={likedBy}
         sharedBy={sharedBy}
         mode={mode}

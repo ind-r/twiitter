@@ -30,7 +30,7 @@ export default function ChangeNick() {
       <div className="flex w-full max-w-sm items-center space-x-2">
         <input
           type="text"
-          className="border-none bg-zinc-950 rounded-xl p-2 w-full"
+          className="border dark:border-zinc-800 dark:bg-zinc-950 rounded-xl p-2 w-full"
           placeholder="New Nick"
           name="nickname"
         />
