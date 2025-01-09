@@ -15,7 +15,7 @@ import {
   isSharedByUser,
 } from "./likeShare";
 import { IUser } from "@/types/models/user";
-import { ObjectId } from "mongoose";
+import { IShare } from "@/types/models/share";
 
 export const postTweet = async (
   userId: string,
@@ -115,11 +115,8 @@ export const getTweets = async (
       return null;
     }
 
-    let matchCondition: {
-      tweetType?: TweetType;
-      userId?: ObjectId;
-      tweetRefId?: ObjectId;
-    } = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let matchCondition: any = {};
 
     switch (mode) {
       case TweetModes.all:
@@ -130,10 +127,16 @@ export const getTweets = async (
           const user: IUser | null = await User.findOne({
             username: usernameToUse,
           });
-          if (!user) {
+          const shares: IShare[] | null = await Share.find({
+            userId: user?._id,
+          });
+          if (!user || !shares) {
             return null;
           }
-          matchCondition = { userId: user._id };
+          const tweetIds = shares.map((share) => share.tweetId);
+          matchCondition = {
+            $or: [{ userId: user._id }, { _id: { $in: tweetIds } }],
+          };
         }
         break;
       case TweetModes.subTweet:

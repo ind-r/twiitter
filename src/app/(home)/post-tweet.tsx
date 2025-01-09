@@ -60,11 +60,25 @@ export default function PostTweet({
           tweetType,
           tweetRefId
         );
+        if (result.status === 200 && result.tweet) {
+          setPopupContent(
+            <TweetPopUp
+              menuText="You just posted a comment!"
+              username={username}
+              nickname={nickname}
+              image={image}
+              tweetContent={tweet}
+              tweetId={result.tweet.tweetId}
+              closePopup={closePopup}
+            />
+          );
+        }
       } else {
         result = await postTweet(data.user.userId, tweet, tweetType, null);
         if (result.status === 200 && result.tweet) {
           setPopupContent(
             <TweetPopUp
+              menuText="You just posted a tweet!"
               username={username}
               nickname={nickname}
               image={image}

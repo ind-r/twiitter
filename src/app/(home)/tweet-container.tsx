@@ -20,6 +20,7 @@ export default function Tweet({
   mode,
   userTweetedThis,
   createdAt,
+  reTweetedBy,
 }: {
   tweetContent: string;
   username: string;
@@ -35,10 +36,11 @@ export default function Tweet({
   mode: TweetModes;
   userTweetedThis?: boolean;
   createdAt: Date;
+  reTweetedBy?: string;
 }) {
   return (
     <article
-      className={`pt-2 text-white ${
+      className={`pt-2 dark:text-white ${
         mode === TweetModes.postTweet ? "" : "border-b dark:border-zinc-800"
       }`}
     >
@@ -55,6 +57,12 @@ export default function Tweet({
           <div>
             <h1 className="inline font-semibold">{nickname} </h1>
             <h1 className="inline text-gray-600 text-sm">@{username}</h1>
+            {reTweetedBy !== undefined && (
+              <h1 className="inline text-gray-600 text-sm">
+                {" "}
+                retweeted by {reTweetedBy}
+              </h1>
+            )}
           </div>
           <p className="inline text-gray-600 text-sm">
             {createdAt.toDateString()}
@@ -68,7 +76,7 @@ export default function Tweet({
           tweetId={tweetId}
         />
       )}
-      <div className="mr-6 pb-1 ml-16">
+      <div className="mr-6 pb-1 ml-16 dark:text-white text-black">
         <h1>{tweetContent}</h1>
       </div>
       <LikeAndShareAndComment

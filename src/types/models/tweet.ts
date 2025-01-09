@@ -29,6 +29,7 @@ export interface IModTweet {
   image: string;
   likedBy: boolean;
   sharedBy: boolean;
+  reTweetedBy?: string;
   tweetType: TweetType;
   tweetRefId?: string;
   createdAt: Date;

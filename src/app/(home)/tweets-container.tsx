@@ -125,6 +125,7 @@ export default function Tweets({
               mode={mode}
               userTweetedThis={data?.user.userId === tweet.userId}
               createdAt={tweet.createdAt}
+              reTweetedBy={tweet.reTweetedBy}
             />
           );
         })}

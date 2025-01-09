@@ -7,6 +7,7 @@ import { TweetModes, TweetType } from "@/types/enums";
 import { IModTweet } from "@/types/models/tweet";
 import { getServerSession, Session } from "next-auth";
 import { notFound } from "next/navigation";
+import { ReloadProvider } from "@/app/(home)/ReloadContex";
 
 export default async function FullTweet({
   params,
@@ -26,28 +27,30 @@ export default async function FullTweet({
   }
   return (
     <>
-      <Tweet
-        key={tweet._id}
-        tweetContent={tweet.tweetContent}
-        tweetId={tweet._id}
-        username={tweet.username}
-        nickname={tweet.nickname}
-        image={tweet.image}
-        likes={tweet.likes}
-        shares={tweet.shares}
-        comments={tweet.comments}
-        likedBy={tweet.likedBy}
-        sharedBy={tweet.sharedBy}
-        sessionUserId={data?.user?.userId}
-        mode={TweetModes.full}
-        createdAt={tweet.createdAt}
-      />
-      <PostTweet
-        data={data}
-        tweetType={TweetType.subTweet}
-        tweetRefId={tweetId}
-      />
-      <Tweets data={data} mode={TweetModes.subTweet} tweetRefId={tweetId} />
+      <ReloadProvider>
+        <Tweet
+          key={tweet._id}
+          tweetContent={tweet.tweetContent}
+          tweetId={tweet._id}
+          username={tweet.username}
+          nickname={tweet.nickname}
+          image={tweet.image}
+          likes={tweet.likes}
+          shares={tweet.shares}
+          comments={tweet.comments}
+          likedBy={tweet.likedBy}
+          sharedBy={tweet.sharedBy}
+          sessionUserId={data?.user?.userId}
+          mode={TweetModes.full}
+          createdAt={tweet.createdAt}
+        />
+        <PostTweet
+          data={data}
+          tweetType={TweetType.subTweet}
+          tweetRefId={tweetId}
+        />
+        <Tweets data={data} mode={TweetModes.subTweet} tweetRefId={tweetId} />
+      </ReloadProvider>
     </>
   );
 }

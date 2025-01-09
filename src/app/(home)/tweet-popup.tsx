@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 
 export default function TweetPopUp({
+  menuText,
   username,
   nickname,
   image,
@@ -11,6 +12,7 @@ export default function TweetPopUp({
   tweetId,
   closePopup,
 }: {
+  menuText: string;
   username: string;
   nickname: string;
   image: string;
@@ -22,7 +24,7 @@ export default function TweetPopUp({
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <div className="bg-white dark:bg-zinc-950 rounded-lg p-4 w-96">
         <div className="flex justify-between items-center pb-8">
-          <h1 className="font-bold text-xl">You just tweeted!</h1>
+          <h1 className="font-bold text-xl">{menuText}</h1>
           <button className="text-red-500" onClick={closePopup}>
             <FontAwesomeIcon icon={faClose} className="h-4 w-4" />
           </button>
