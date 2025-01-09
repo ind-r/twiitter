@@ -8,7 +8,6 @@ import User from "@/lib/models/userModel";
 import { TweetModes, TweetType } from "@/types/enums";
 import { IModTweet, ITweet } from "@/types/models/tweet";
 import { IExist } from "@/types/utils";
-import { revalidatePath } from "next/cache";
 import {
   getLikesOfTweet,
   getSharesOfTweet,
@@ -23,7 +22,7 @@ export const postTweet = async (
   tweet: string,
   tweetType: TweetType,
   tweetRefId: string | null
-): Promise<{ status: number } | undefined> => {
+) => {
   try {
     const connect = await connectMongoDB();
     if (!connect) {
@@ -38,8 +37,13 @@ export const postTweet = async (
     });
     const result = await newTweet.save();
     if (result) {
-      revalidatePath("/");
-      return { status: 200 };
+      return {
+        status: 200,
+        tweet: {
+          tweetId: newTweet._id.toString(),
+          tweetContent: newTweet.tweetContent,
+        },
+      };
     } else {
       console.log("err: posting the tweet!");
       return { status: 500 };
@@ -90,7 +94,7 @@ export const deleteTweet = async (
 
 export interface ITweetProps {
   mode: TweetModes;
-  page: number;
+  cursor: Date;
   pageSize: number;
   sessionUserId: string | undefined;
   usernameToUse?: string | undefined;
@@ -101,7 +105,7 @@ export const getTweets = async (
   props: ITweetProps
 ): Promise<Array<IModTweet> | null> => {
   try {
-    const { mode, page, pageSize, sessionUserId, usernameToUse, tweetRefId } =
+    const { mode, cursor, pageSize, sessionUserId, usernameToUse, tweetRefId } =
       props;
 
     const connect = await connectMongoDB();
@@ -154,7 +158,10 @@ export const getTweets = async (
       {
         $facet: {
           metadata: [{ $count: "totalCount" }],
-          data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
+          data: [
+            { $match: { createdAt: { $lt: cursor } } },
+            { $limit: pageSize },
+          ],
         },
       },
     ]);
@@ -187,6 +194,7 @@ export const getTweets = async (
             likedBy: false,
             sharedBy: false,
             tweetType: tweet.tweetType,
+            createdAt: tweet.createdAt,
           };
           if (sessionUserId) {
             [t.likedBy, t.sharedBy] = await Promise.all([
@@ -236,6 +244,7 @@ export const getTweet = async (
         likedBy: false,
         sharedBy: false,
         tweetType: tweet.tweetType,
+        createdAt: tweet.createdAt,
       };
       if (sessionUserId) {
         [t.likedBy, t.sharedBy] = await Promise.all([
