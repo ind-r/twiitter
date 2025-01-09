@@ -38,7 +38,12 @@ export default function Tweet({
     <article className="pt-2 text-white border-b dark:border-zinc-800">
       <Link href={`/${username}`}>
         <div className="h-[40px] w-[40px] float-left mt-2 ml-4 rounded-full overflow-hidden ">
-          <Image width={100} height={100} alt="userImg" src={image} />
+          <Image
+            width={100}
+            height={100}
+            alt="userImg"
+            src={image.includes("http") ? image : "/default-user.png"}
+          />
         </div>
         <div className="mr-6 pt-1 ml-16">
           <h1 className="inline font-semibold">{nickname} </h1>
