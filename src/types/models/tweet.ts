@@ -7,6 +7,7 @@ export interface ITweet extends Document {
   tweetContent: string;
   tweetType: TweetType;
   tweetRefId?: string;
+  createdAt: Date;
 }
 
 export interface ISTweet {
@@ -30,4 +31,5 @@ export interface IModTweet {
   sharedBy: boolean;
   tweetType: TweetType;
   tweetRefId?: string;
+  createdAt: Date;
 }

@@ -19,6 +19,7 @@ export default function Tweet({
   sharedBy,
   mode,
   userTweetedThis,
+  createdAt,
 }: {
   tweetContent: string;
   username: string;
@@ -33,9 +34,14 @@ export default function Tweet({
   sessionUserId: string | undefined;
   mode: TweetModes;
   userTweetedThis?: boolean;
+  createdAt: Date;
 }) {
   return (
-    <article className="pt-2 text-white border-b dark:border-zinc-800">
+    <article
+      className={`pt-2 text-white ${
+        mode === TweetModes.postTweet ? "" : "border-b dark:border-zinc-800"
+      }`}
+    >
       <Link href={`/${username}`}>
         <div className="h-[40px] w-[40px] float-left mt-2 ml-4 rounded-full overflow-hidden ">
           <Image
@@ -45,16 +51,23 @@ export default function Tweet({
             src={image.includes("http") ? image : "/default-user.png"}
           />
         </div>
-        <div className="mr-6 pt-1 ml-16">
-          <h1 className="inline font-semibold">{nickname} </h1>
-          <h1 className="inline text-gray-600 text-sm">@{username}</h1>
+        <div className="mr-6 pt-1 ml-16 flex items-center justify-between">
+          <div>
+            <h1 className="inline font-semibold">{nickname} </h1>
+            <h1 className="inline text-gray-600 text-sm">@{username}</h1>
+          </div>
+          <p className="inline text-gray-600 text-sm">
+            {createdAt.toDateString()}
+          </p>
         </div>
       </Link>
-      <ThreeDots
-        userTweetedThis={userTweetedThis}
-        sessionUserId={sessionUserId}
-        tweetId={tweetId}
-      />
+      {mode != TweetModes.postTweet && (
+        <ThreeDots
+          userTweetedThis={userTweetedThis}
+          sessionUserId={sessionUserId}
+          tweetId={tweetId}
+        />
+      )}
       <div className="mr-6 pb-1 ml-16">
         <h1>{tweetContent}</h1>
       </div>

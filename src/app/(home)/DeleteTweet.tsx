@@ -12,7 +12,7 @@ export default function DeleteTweet({
     await deleteTweet(sessionUserId, tweetId);
   };
   return (
-    <div onClick={handleClick} className="text-red-600 p-2">
+    <div onClick={handleClick} className="text-red-600 p-2 cursor-pointer">
       Delete
     </div>
   );

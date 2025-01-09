@@ -4,6 +4,7 @@ export enum TweetModes {
   account,
   full,
   subTweet,
+  postTweet,
 }
 
 export enum TweetType {

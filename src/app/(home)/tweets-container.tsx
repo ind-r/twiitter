@@ -7,6 +7,8 @@ import { TweetModes } from "@/types/enums";
 import { IModTweet } from "@/types/models/tweet";
 import { getTweets } from "@/actions/tweets";
 import { Session } from "next-auth";
+import { useReload, useReloadUpdate } from "./ReloadContex";
+import Reload from "./ReloadButton";
 
 export default function Tweets({
   username,
@@ -20,10 +22,12 @@ export default function Tweets({
   tweetRefId?: string;
 }) {
   const [tweets, setTweets] = useState<IModTweet[]>([]);
-  const [pagesLoaded, setPagesLoaded] = useState(0);
+  const [cursor, setCursor] = useState<Date>(new Date());
   const [noMoreTweets, setNoMoreTweets] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const reload = useReload();
+  const updateReload = useReloadUpdate();
 
   useEffect(() => {
     const loadMoreTweets = async ({
@@ -35,26 +39,29 @@ export default function Tweets({
     }) => {
       if (isLoading) return;
       setIsLoading(true);
-      const nextPage = pagesLoaded + 1;
       const newTweets: Array<IModTweet> | null = await getTweets({
         mode,
-        page: nextPage,
+        cursor,
         pageSize: 8,
         sessionUserId: data?.user.userId,
         usernameToUse: username,
         tweetRefId,
       });
-      if (newTweets) {
-        setTweets((prevTweets: IModTweet[]) => [...prevTweets, ...newTweets]);
-        setPagesLoaded(nextPage);
-        if (newTweets.length === 0) {
-          setNoMoreTweets(true);
-        } else {
-          setNoMoreTweets(false);
-        }
+      if (!newTweets || newTweets.length === 0) {
+        setNoMoreTweets(true);
+        return;
       }
+      setTweets((prevTweets: IModTweet[]) => [...prevTweets, ...newTweets]);
+      setCursor(newTweets[newTweets.length - 1].createdAt);
       setIsLoading(false);
     };
+    if (reload) {
+      setTweets([]);
+      setCursor(new Date());
+      setNoMoreTweets(false);
+      updateReload();
+      return;
+    }
     if (isLoading || noMoreTweets) return;
     const observer = new IntersectionObserver(
       (entries) => {
@@ -92,10 +99,13 @@ export default function Tweets({
     data,
     username,
     tweetRefId,
-    pagesLoaded,
+    cursor,
+    reload,
+    updateReload,
   ]);
   return (
     <>
+      <Reload />
       {tweets?.length > 0 &&
         tweets.map((tweet: IModTweet) => {
           return (
@@ -114,6 +124,7 @@ export default function Tweets({
               sessionUserId={data?.user?.userId}
               mode={mode}
               userTweetedThis={data?.user.userId === tweet.userId}
+              createdAt={tweet.createdAt}
             />
           );
         })}

@@ -40,6 +40,7 @@ export default async function FullTweet({
         sharedBy={tweet.sharedBy}
         sessionUserId={data?.user?.userId}
         mode={TweetModes.full}
+        createdAt={tweet.createdAt}
       />
       <PostTweet
         data={data}
